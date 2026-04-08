@@ -9,7 +9,7 @@ import Duel from '@/lib/models/Duel';
 import { calculateEloChange } from '@/lib/elo';
 
 export async function POST(req: Request) {
-    
+     
 
     // connect to the database
     await dbConnect();
