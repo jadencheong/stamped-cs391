@@ -1,6 +1,23 @@
 import mongoose, { Schema, model, models } from 'mongoose';
 
 const destinationSchema = new Schema({
+  // core identity from MapBox — set once upon creation, never changed
+  mapboxId: { type: String, required: true, unique: true },
+  placeName: { type: String },
+  country: { type: String },
+  location: {
+    type: { type: String, enum: ['Point'], default: 'Point' },
+    coordinates: { type: [Number] },
+  },
+
+  // aggregated post data — updated when users create/delete posts
+  postCount: { type: Number, default: 0 },
+  tags: [{
+    label: { type: String },
+    count: { type: Number, default: 0 }
+  }],
+
+
   name: { type: String, required: true },
   // enum is the only values we're "allowing" the category to be
   category: { type: String, enum: ['City', 'Nature', 'Resort', 'Other'], default: 'City' },
