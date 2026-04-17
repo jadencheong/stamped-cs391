@@ -4,6 +4,7 @@ import Post from '@/lib/models/Post';
 import User from '@/lib/models/User';
 import Destination from '@/lib/models/Destination';
 
+/* created by: Alen */
 /* EDIT POST */
 export async function PATCH(
     req: Request,
@@ -12,6 +13,14 @@ export async function PATCH(
     await dbConnect();
     try {
         const { userId, tags, caption, images } = await req.json();
+
+        // if tags are being updated then validate them
+        if (tags !== undefined && (tags.length < 1 || tags.length > 3 )) {
+            return NextResponse.json(
+                { error: 'Between 1 and 3 tags are required' },
+                { status: 400 }
+            );
+        }
 
         const post = await Post.findById(params.id);
         if (!post) {
@@ -24,16 +33,13 @@ export async function PATCH(
         }
 
         // the city should be locked after creation so destinationId can be ignored if someone sends it
-        const tagsChanged = tags && JSON.stringify(tags) !== JSON.stringify(post.tags);
-
         if (tags)    post.tags    = tags;
         if (caption !== undefined) post.caption = caption;
         if (images)  post.images  = images;
 
         await post.save();
 
-        // based on the roadmap a change in tags causes some typee of re duel to be triggered
-        return NextResponse.json({ success: true, post, triggerReDuel: tagsChanged });
+        return NextResponse.json({ success: true, post });
 
     } catch (error) {
         console.error('Error editing post:', error);
