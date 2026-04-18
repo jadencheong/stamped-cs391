@@ -3,6 +3,7 @@ import dbConnect from '@/lib/db';
 import Post from '@/lib/models/Post';
 import User from '@/lib/models/User';
 
+/* crated by: Alen */
 /* CREATE POST */
 
 export async function POST(req: Request) {
@@ -17,14 +18,13 @@ export async function POST(req: Request) {
             );
         }
 
-        // TODO: need to add tags to the post schema
-        // *this should work and be uncommented once tags are added*
-        // if (!tags || tags.length < 1 || tags.length > 3) {
-        //   return NextResponse.json(
-        //     { error: 'Between 1 and 3 tags are required' },
-        //     { status: 400 }
-        //   );
-        // }
+        // tags are now added to the schema, min 1, max 3 per the roadmap
+        if (!tags || tags.length < 1 || tags.length > 3) {
+            return NextResponse.json(
+                { error: 'Between 1 and 3 tags are required' },
+                { status: 400 }
+            );
+        }
 
         // should only be one post per city
         const existing = await Post.findOne({ userId, destinationId });
