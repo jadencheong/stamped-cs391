@@ -5,6 +5,10 @@ const destinationSchema = new Schema({
   mapboxId: { type: String, required: true, unique: true },
   placeName: { type: String },
   country: { type: String },
+
+  // city cover photo — sourced from unsplash
+  photoUrl: { type: String, default: null },
+
   location: {
     type: { type: String, enum: ['Point'], default: 'Point' },
     coordinates: { type: [Number] },
