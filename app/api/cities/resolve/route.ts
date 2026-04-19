@@ -50,7 +50,32 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ city, created: false });
         }
 
-        // city doesn't exist yet — create it from the Mapbox data
+        // fetch a cover photo from Unsplash for this city
+        // called once on first "stamp"
+        // photo url then stored in city document
+        let photoUrl = null;
+        const unsplashKey = process.env.UNSPLASH_ACCESS_KEY;
+
+        // only fetch if the key exists
+        // if it doesn't — photoURL returns null
+        if (unsplashKey) {
+            try {
+                const unsplashRes = await fetch(
+                    // get only one result, top match
+                    `https://api.unsplash.com/search/photos?query=${encodeURIComponent(name)}&per_page=1&client_id=${unsplashKey}`
+                );
+
+                // make request and pass as json object
+                // 2 separate requests — wait for network, wait for body to bew read/parsed
+                const unsplashData = await unsplashRes.json();
+                photoUrl = unsplashData.results?.[0]?.urls?.regular ?? null;
+            } catch (err) {
+                // if Unsplash fails — proceed without a photo instead of failing whole request
+                console.error('[[/api/cities/resolve] Unsplash fetch failed:', err);
+            }
+        }
+
+        // city doesn't exist yet — create it from the Mapbox data including photos
         // globalAverageScore starts at 1000 (standard Elo baseline)
         // all aggregated fields start empty/zero and grow as users interact
         city = await Destination.create({
@@ -58,6 +83,7 @@ export async function POST(req: NextRequest) {
             name,
             placeName,
             country: country ?? null,
+            photoUrl,
             location: {
                 type: 'Point',
                 coordinates, // [lng, lat] from Mapbox
