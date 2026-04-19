@@ -51,7 +51,7 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
         );
 
         if (updates.username) {
-            const existingUsername = await User.findOne({ username: updates.username });
+            const existingUsername = await User.findOne({ username: updates.username, _id: { $ne: req.params.id } });
             if (existingUsername) {
                 res.status(409).json({ message: 'Username already in use.' });
                 return;
@@ -59,7 +59,7 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
         }
 
         if (updates.email) {
-            const existingEmail = await User.findOne({ email: updates.email });
+            const existingEmail = await User.findOne({ email: updates.email, _id: { $ne: req.params.id } });
             if (existingEmail) {
                 res.status(409).json({ message: 'Email already in use.' });
                 return;
