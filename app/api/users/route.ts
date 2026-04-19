@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
 
         const existing = await User.findOne({ $or: [{ email }, { username }] });
         if (existing) {
-            return NextResponse.json({ message: 'Username or email already in use.' }, { status: 409 });
+            return NextResponse.json({ message: 'Username or email already in use.' }, { status: 409 }); // 409: Conflict
         }
 
         const user = await User.create({ username, email });
