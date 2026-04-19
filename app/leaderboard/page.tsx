@@ -14,6 +14,7 @@
 import dbConnect from '@/lib/db';
 import Destination from '@/lib/models/Destination';
 import Image from 'next/image';
+import Link from 'next/link';
 
 // defines shape of city entry we're working with
 // TS can't look at Destination Scheme object and see what each data field is and derive the types
@@ -99,13 +100,16 @@ export default async function LeaderboardPage() {
 
                             {/* city info */}
                             <div style={{ flex: 1 }}>
-                                <p style={{ margin: 0, fontWeight: 'bold' }}>
+                                <Link
+                                    href={`/cities/${city.name.toLowerCase().replace(/\s+/g, '-')}`}
+                                    style={{ margin: 0, fontWeight: 'bold', textDecoration: 'none', color: 'black' }}
+                                >
                                     {/* conditional rendering
                                         if country exists — append w/ comma
                                         if not — don't append anything
                                     */}
                                     {city.name}{city.country ? `, ${city.country}` : ''}
-                                </p>
+                                </Link>
 
                                 {/* top tags */}
                                 <div style={{ display: 'flex', gap: '6px', marginTop: '4px', flexWrap: 'wrap' }}>
