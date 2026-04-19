@@ -20,6 +20,7 @@ import dbConnect from '@/lib/db';
 import User from '@/lib/models/User';
 import Destination from '@/lib/models/Destination';
 import Image from 'next/image';
+import Link from 'next/link';
 
 // todo: replace with real session userId once NextAuth is integrated (Ellen's auth)
 // for now using a hardcoded placeholder so the page can be built and tested
@@ -124,7 +125,12 @@ export default async function YourListPage() {
 
                                 {/* city info */}
                                 <div style={{ flex: 1 }}>
-                                    <p style={{ margin: 0, fontWeight: 'bold' }}>{city?.name ?? 'Unknown city'}</p>
+                                    <Link
+                                        href={`/cities/${city?.name?.toLowerCase().replace(/\s+/g, '-')}`}
+                                        style={{ margin: 0, fontWeight: 'bold', textDecoration: 'none', color: 'black' }}
+                                    >
+                                        {city?.name ?? 'Unknown city'}
+                                    </Link>
 
                                     {/* tags */}
                                     <div style={{ display: 'flex', gap: '6px', marginTop: '4px', flexWrap: 'wrap' }}>
