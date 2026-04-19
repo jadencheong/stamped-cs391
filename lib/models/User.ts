@@ -8,8 +8,8 @@ const userSchema = new Schema({
     personalElo: { type: Number, default: 1000 },
     createdAt: { type: Date, default: Date.now }
   }],
-  following: { type: Schema.Types.Boolean, ref: 'User' },
-  followers: { type: Schema.Types.ObjectId, ref: 'User' },
+  following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 });
 
 // checks if the model exists, otherwise creates it
