@@ -1,0 +1,72 @@
+// app/post/page.tsx
+'use client';
+import { useState } from 'react';
+import styled from 'styled-components';
+import SearchBar from '@/components/SearchBar';
+import PostForm from '@/components/PostForm';
+
+/* created by Alen */
+
+// TODO: replace with real auth once login is implemented
+const HARDCODED_USER_ID = 'PUT_YOUR_USER_HERE';
+
+type ResolvedCity = {
+    _id: string;
+    name: string;
+    placeName: string;
+    mapboxId: string;
+    country: string | null;
+    coordinates: [number, number];
+};
+
+const Wrapper = styled.div`
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+`;
+
+const Heading = styled.p`
+  font-family: 'Unbounded', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 1rem;
+`;
+
+const BackButton = styled.button`
+  font-size: 12px;
+  color: #9ca3af;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-bottom: 1.5rem;
+`;
+
+export default function PostPage() {
+    const [selectedCity, setSelectedCity] = useState<ResolvedCity | null>(null);
+
+    // city search
+    if (!selectedCity) {
+        return (
+            <Wrapper>
+                <Heading>Where did you go?</Heading>
+                <SearchBar onCitySelect={(city) => setSelectedCity(city as ResolvedCity)} />
+            </Wrapper>
+        );
+    }
+
+    //post form, city has been chosen with the search bar above
+    return (
+        <Wrapper>
+            <BackButton onClick={() => setSelectedCity(null)}>
+                ← Change city
+            </BackButton>
+            <PostForm
+                mode="create"
+                userId={HARDCODED_USER_ID}
+                destinationId={selectedCity._id}
+                destinationName={selectedCity.name}
+            />
+        </Wrapper>
+    );
+}
