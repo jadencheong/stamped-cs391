@@ -5,6 +5,7 @@ const userSchema = new Schema({
   email: { type: String, required: true, unique: true },
   verified: { type: Boolean, default: false },
   verificationToken: { type: String, default: null },
+  password: { type: String, required: true },
   myRankings: [{
     destinationId: { type: Schema.Types.ObjectId, ref: 'Destination' },
     personalElo: { type: Number, default: 1000 },
