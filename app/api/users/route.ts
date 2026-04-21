@@ -29,8 +29,7 @@ export async function POST(req: NextRequest) {
         // Generate a random token
         const verificationToken = crypto.randomBytes(32).toString('hex');
 
-        // Stores information in user
-        const user = await User.create({
+        await User.create({
             username,
             email,
             password: hashedPassword,
