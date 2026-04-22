@@ -13,6 +13,9 @@ import { Unbounded, Roboto_Condensed } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
 
+// from Anna
+import DuelIcon from "./components/duel/DuelIcon";
+
 // heading fonts as custom CSS property
 // can be referenced anywhere as "--font-unbounded"
 const unbounded = Unbounded({
@@ -51,6 +54,8 @@ export default function RootLayout({
         >
             <Nav />
             { children }
+            {/* show the duel icon always */}
+            <DuelIcon />
         </body>
         </html>
     );

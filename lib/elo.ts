@@ -9,7 +9,7 @@
 // https://mattmazzola.medium.com/implementing-the-elo-rating-system-a085f178e065
 
 export function calculateEloChange(winnerElo: number, loserElo: number, isDraw: boolean) {
-    const K = 32; // determines how fast ranks change
+    const K = 100; // determines how fast ranks change
 
     // calculate the expected scores
     // based on probability that winner "should" win

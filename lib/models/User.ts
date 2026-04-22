@@ -6,6 +6,8 @@ const userSchema = new Schema({
   myRankings: [{
     destinationId: { type: Schema.Types.ObjectId, ref: 'Destination' },
     personalElo: { type: Number, default: 1000 },
+    isSettled: { type: Boolean, default: false }, // for duel notifications and such
+    timesDuelled: { type: Number, default: 0 }, // for choosing opponents/undueled notifications 
     createdAt: { type: Date, default: Date.now }
   }],
   following: [{ type: Schema.Types.ObjectId, ref: 'User' }],

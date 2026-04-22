@@ -6,7 +6,7 @@ import PostCard from '@/components/PostCard';
 /* created by Alen */
 
 // TODO: replace this once we are done with real auth
-const HARDCODED_USER_ID = 'PUT_YOUR_USER_ID';
+const HARDCODED_USER_ID = '000000000000000000000001';
 
 type Post = {
   _id: string;
