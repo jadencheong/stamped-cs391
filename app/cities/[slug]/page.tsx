@@ -42,11 +42,14 @@ interface PostDocument {
     caption: string;
 }
 
+// STYLED COMPONENTS
+
 // container for entire page
 const PageWrapper = styled.div`
-  max-width: 680px;
+  max-width: 480px;
   margin: 0 auto;
   padding: 0 0 4rem;
+    background: #EEEEEE;
 `;
 
 // container for city cover photo
@@ -67,6 +70,12 @@ const TextOverlay = styled.div`
     right: 0;
     padding: 2rem 1.5rem 1.5rem;
     background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+`;
+
+const HeroPlaceholder = styled.div`
+    width: 100%;
+    height: 100%;
+    background: #EEEEEE;
 `;
 
 // city name displayed over hero photo
@@ -178,6 +187,24 @@ const NotFound = styled.div`
     padding: 4rem 1rem;
 `;
 
+const DuelNote = styled.p`
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 8px;
+`;
+
+const NoTagsText = styled.p`
+    font-size: 13px;
+    color: #9ca3af;
+    margin: 0;
+`;
+
+const LastSection = styled(ContentSection)`
+    border-bottom: none;
+`;
+
+// END OF STYLED COMPONENTS
+
 export default async function CityPage({ params }: CityPageProps) {
     const { slug } = await params;
 
@@ -256,7 +283,7 @@ export default async function CityPage({ params }: CityPageProps) {
                         style={{ objectFit: 'cover' }}
                     />
                 ) : (
-                    <div style={{ width: '100%', height: '100%', background: '#EEEEEE' }} />
+                    <HeroPlaceholder />
                 )}
                 <TextOverlay>
                     <CityTitle>{city.name}</CityTitle>
@@ -272,9 +299,9 @@ export default async function CityPage({ params }: CityPageProps) {
                 <RankBadge>
                     #{globalRank} · {city.globalAverageScore} pts
                 </RankBadge>
-                <p style={{ fontSize: '12px', color: '#9ca3af', marginTop: '8px' }}>
+                <DuelNote>
                     Based on {city.timesDuelled} {city.timesDuelled === 1 ? 'duel' : 'duels'} across all users
-                </p>
+                </DuelNote>
             </ContentSection>
 
             {/* description — only renders if Wikipedia returned one */}
@@ -295,14 +322,14 @@ export default async function CityPage({ params }: CityPageProps) {
                         ))}
                     </TagRow>
                 ) : (
-                    <p style={{ fontSize: '13px', color: '#9ca3af', margin: 0 }}>
+                    <NoTagsText>
                         No tags yet — be the first to stamp this city.
-                    </p>
+                    </NoTagsText>
                 )}
             </ContentSection>
 
             {/* post feed */}
-            <ContentSection style={{ borderBottom: 'none' }}>
+            <LastSection>
                 <SectionLabel>Posts</SectionLabel>
                 {posts.length === 0 ? (
                     <EmptyState>No posts yet for {city.name}.</EmptyState>
@@ -321,7 +348,7 @@ export default async function CityPage({ params }: CityPageProps) {
                         </PostCard>
                     ))
                 )}
-            </ContentSection>
+            </LastSection>
 
         </PageWrapper>
     );
