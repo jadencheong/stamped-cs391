@@ -9,7 +9,7 @@
  */
 
 import type { Metadata } from "next";
-import { Unbounded, Roboto_Condensed } from "next/font/google";
+import { Unbounded } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
 
@@ -17,13 +17,6 @@ import Nav from "@/components/Nav";
 // can be referenced anywhere as "--font-unbounded"
 const unbounded = Unbounded({
     variable: "--font-unbounded",
-    subsets: ["latin"],
-});
-
-// body font as custom CSS property
-// can be referenced anywhere as ""--font-roboto-condensed
-const robotoCondensed = Roboto_Condensed({
-    variable: "--font-roboto-condensed",
     subsets: ["latin"],
 });
 
@@ -43,11 +36,12 @@ export default function RootLayout({
         // font variables applied to html element as CSS variables throughout
         <html
             lang="en"
-            className={`${unbounded.variable} ${robotoCondensed.variable} h-full antialiased`}
+            data-theme="light"
+            className={`${unbounded.variable} h-full antialiased`}
         >
         <body
             className="min-h full flex flex-col"
-            style={{ fontFamily: 'var(--font-roboto-condensed), sans-serif' }}
+            style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
         >
             <Nav />
             { children }

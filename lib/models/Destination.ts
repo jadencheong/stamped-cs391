@@ -3,11 +3,15 @@ import mongoose, { Schema, model, models } from 'mongoose';
 const destinationSchema = new Schema({
   // core identity from MapBox — set once upon creation, never changed
   mapboxId: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
   placeName: { type: String },
   country: { type: String },
 
   // city cover photo — sourced from unsplash
-  photoUrl: { type: String, default: null },
+  imageUrl: { type: String, default: null },
+
+  // city description — sourced from Wikipedia on first stamp
+  description: { type: String, default: null },
 
   location: {
     type: { type: String, enum: ['Point'], default: 'Point' },
@@ -22,7 +26,6 @@ const destinationSchema = new Schema({
   }],
 
 
-  name: { type: String, required: true },
   // enum is the only values we're "allowing" the category to be
   category: { type: String, enum: ['City', 'Nature', 'Resort', 'Other'], default: 'City' },
   globalTotalScore: { type: Number, default: 1000 },

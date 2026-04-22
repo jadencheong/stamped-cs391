@@ -25,7 +25,7 @@ interface DestinationEntry {
     // city might not have country if MapBox didn't return one
     country: string | null;
     // city might not have a photo if Unsplash call failed
-    photoUrl: string | null;
+    imageUrl: string | null;
     globalAverageScore: number;
     timesDuelled: number;
     // array of objects — matches what's stored in Destination document
@@ -45,7 +45,7 @@ export default async function LeaderboardPage() {
         // only keep the fields needed for it
         const results = await Destination.find()
             .sort({ globalAverageScore: -1 })
-            .select('name country photoUrl globalAverageScore timesDuelled tags')
+            .select('name country imageUrl globalAverageScore timesDuelled tags')
             // Mongoose wraps results in Mongoose Document object (JS object with extra methods)
             // lean() strips away methods since we just need reading/displaying datas
             .lean();
@@ -88,9 +88,9 @@ export default async function LeaderboardPage() {
                             </span>
 
                             {/* city photo */}
-                            {city.photoUrl && (
+                            {city.imageUrl && (
                                 <Image
-                                    src={city.photoUrl}
+                                    src={city.imageUrl}
                                     alt={city.name}
                                     width={60}
                                     height={60}

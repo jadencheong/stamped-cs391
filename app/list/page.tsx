@@ -37,7 +37,7 @@ export default async function YourListPage() {
         destinationId: {
             name: string;
             tags: { label: string; count: number }[];
-            photoUrl?: string;
+            imageUrl?: string;
         } | null;
         personalElo: number;
     }[] = [];
@@ -53,7 +53,7 @@ export default async function YourListPage() {
         const user = await User.findById(TEMP_USER_ID).populate({
             path: 'myRankings.destinationId',
             model: Destination,
-            select: 'name tags photoUrl',
+            select: 'name tags imageUrl',
         });
 
         if (user && user.myRankings.length > 0) {
@@ -111,11 +111,11 @@ export default async function YourListPage() {
                                 </span>
 
                                 {/* city photo
-                                    only render image if photoURL exists
+                                    only render image if imageUrl exists
                                 */}
-                                {city?.photoUrl && (
+                                {city?.imageUrl && (
                                     <Image
-                                        src={city.photoUrl}
+                                        src={city.imageUrl}
                                         alt={city.name}
                                         width={60}
                                         height={60}
