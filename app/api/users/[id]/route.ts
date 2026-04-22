@@ -4,11 +4,12 @@ import User from '@/lib/models/User';
 
 // Retrieve user profile
 // GET
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         await dbConnect();
+        const { id } = await params;
 
-        const user = await User.findById(params.id)
+        const user = await User.findById(id)
             .populate('following', 'username')
             .populate('followers', 'username');
 
@@ -24,9 +25,11 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
 // Edit username of profile
 // PUT
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         await dbConnect();
+        const { id } = await params;
+
         const body = await req.json();
 
         const allowedUpdates = ['username'];
@@ -38,14 +41,14 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         if (updates.username) {
             const existingUsername = await User.findOne({
                 username: updates.username,
-                _id: { $ne: params.id },
+                _id: { $ne: id },
             });
             if (existingUsername) {
                 return NextResponse.json({ message: 'Username already in use.' }, { status: 409 });
             }
         }
 
-        const user = await User.findByIdAndUpdate(params.id, updates, { new: true, runValidators: true });
+        const user = await User.findByIdAndUpdate(id, updates, { new: true, runValidators: true });
 
         if (!user) {
             return NextResponse.json({ message: 'User not found.' }, { status: 404 });
@@ -58,11 +61,12 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 // DELETE
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         await dbConnect();
+        const { id } = await params;
 
-        const user = await User.findByIdAndDelete(params.id);
+        const user = await User.findByIdAndDelete(id);
         if (!user) {
             return NextResponse.json({ message: 'User not found.' }, { status: 404 });
         }

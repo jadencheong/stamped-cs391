@@ -1,10 +1,11 @@
-import { NextResponse } from 'next/server';
+import {NextRequest, NextResponse} from 'next/server';
 import dbConnect from '@/lib/db';
 import Post from '@/lib/models/Post';
 import User from '@/lib/models/User';
 
 /* crated by: Alen */
 /* CREATE POST */
+/* Ellen edit: added userId as part of GET route */
 
 export async function POST(req: Request) {
     await dbConnect();
@@ -55,10 +56,15 @@ export async function POST(req: Request) {
 }
 
 /* GET ALL POSTS */
-export async function GET() {
+export async function GET(req: NextRequest) {
     await dbConnect();
     try {
-        const posts = await Post.find()
+        const userId = req.nextUrl.searchParams.get('userId');
+
+        // build query — filter by userId if provided, otherwise return all
+        const query = userId ? { userId } : {};
+
+        const posts = await Post.find(query)
             .sort({ createdAt: -1 })
             .populate('userId', 'username')        // show author username and not just id
             .populate('destinationId', 'name');    // show city name and not just id

@@ -11,7 +11,9 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import styled, { keyframes } from 'styled-components';
+import PostCard from '@/components/PostCard';
 
 // colors
 // blue slate: #326273
@@ -227,46 +229,6 @@ const SectionTitle = styled.h2`
     margin: 0 0 1rem;
 `;
 
-const RankingList = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-`;
-
-const RankingItem = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.75rem 1rem;
-    background: #f8fbfc;
-    border-radius: 0.75rem;
-    border: 1px solid #eef3f5;
-    animation: ${fadeUp} 0.3s ease-out both;
-`;
-
-const RankNumber = styled.span`
-    font-family: 'Bebas Neue', 'Arial Narrow', sans-serif;
-    font-size: 1.2rem;
-    color: #7DC4D4;
-    min-width: 28px;
-    letter-spacing: 0.05em;
-`;
-
-const RankName = styled.span`
-    font-family: 'Helvetica', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #326273;
-    flex: 1;
-`;
-
-const RankElo = styled.span`
-    font-family: 'Helvetica', sans-serif;
-    font-size: 0.78rem;
-    color: #5C9EAD;
-    font-weight: 500;
-`;
-
 const EmptyState = styled.p`
     font-family: 'Helvetica', sans-serif;
     font-size: 0.88rem;
@@ -274,6 +236,12 @@ const EmptyState = styled.p`
     text-align: center;
     padding: 2rem 0;
     margin: 0;
+`;
+
+const PostList = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 `;
 
 const LoadingText = styled.p`
@@ -285,9 +253,117 @@ const LoadingText = styled.p`
     margin: 0;
 `;
 
+const LoggedOutCard = styled.div`
+    background: #ffffff;
+    border-radius: 1.5rem;
+    padding: 3rem 2.5rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 8px 40px rgba(50, 98, 115, 0.12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+    animation: ${fadeUp} 0.4s ease-out both;
+`;
+
+const LoggedOutTitle = styled.h2`
+    font-family: 'Helvetica', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #326273;
+    margin: 0;
+`;
+
+const LoggedOutSubtitle = styled.p`
+    font-family: 'Helvetica', sans-serif;
+    font-size: 0.88rem;
+    color: #5C9EAD;
+    margin: 0;
+    line-height: 1.5;
+`;
+
+const AuthButtonRow = styled.div`
+    display: flex;
+    gap: 0.75rem;
+    width: 100%;
+    margin-top: 0.5rem;
+`;
+
+const PrimaryAuthButton = styled.a`
+    flex: 1;
+    padding: 0.8rem;
+    background: #326273;
+    color: #EEEEEE;
+    font-family: 'Helvetica', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 0.75rem;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(50, 98, 115, 0.3);
+    transition: all 0.2s ease;
+
+    &:hover {
+        filter: brightness(1.1);
+        transform: translateY(-2px);
+    }
+`;
+
+const SecondaryAuthButton = styled.a`
+    flex: 1;
+    padding: 0.8rem;
+    background: none;
+    color: #326273;
+    font-family: 'Helvetica', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: 1.5px solid #d5e4e8;
+    border-radius: 0.75rem;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        border-color: #5C9EAD;
+        transform: translateY(-2px);
+    }
+`;
+
+const SignOutButton = styled.button`
+    background: none;
+    border: 1.5px solid #d5e4e8;
+    border-radius: 0.6rem;
+    padding: 0.4rem 0.85rem;
+    font-family: 'Helvetica', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #BF7245;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    align-self: flex-start;
+
+    &:hover {
+        border-color: #BF7245;
+        background: #FAECE7;
+    }
+`;
+
 export default function ProfilePage() {
+    const router = useRouter();
     const [user, setUser] = useState<any>(null);
     const [userId, setUserId] = useState<string | null>(null);
+    const [posts, setPosts] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const [newUsername, setNewUsername] = useState('');
@@ -305,10 +381,18 @@ export default function ProfilePage() {
 
         const fetchUser = async () => {
             try {
-                const res = await fetch(`/api/users/${id}`);
-                const data = await res.json();
-                setUser(data);
-                setNewUsername(data.username);
+                const [userRes, postsRes] = await Promise.all([
+                    fetch(`/api/users/${id}`),
+                    fetch(`/api/posts?userId=${id}`),
+                ]);
+
+                const userData = await userRes.json();
+                const postsData = await postsRes.json();
+
+                setUser(userData);
+                console.log('user data:', userData);
+                setNewUsername(userData.username);
+                setPosts(postsData.posts ?? []);
             } catch (err) {
                 console.error('Failed to fetch user:', err);
             } finally {
@@ -363,6 +447,11 @@ export default function ProfilePage() {
         setIsEditing(false);
     };
 
+    const handleSignOut = () => {
+        localStorage.removeItem('userId');
+        router.push('/login');
+    };
+
     // get initials for avatar — safe fallback if username not yet loaded
     const getInitials = (username: string | undefined) => {
         if (!username) return '??';
@@ -370,7 +459,20 @@ export default function ProfilePage() {
     };
 
     if (isLoading) return <PageWrapper><LoadingText>Loading profile...</LoadingText></PageWrapper>;
-    if (!userId) return <PageWrapper><LoadingText>Please log in to view your profile.</LoadingText></PageWrapper>;
+    if (!userId) return (
+        <PageWrapper>
+            <LoggedOutCard>
+                <LoggedOutTitle>You&apos;re not logged in</LoggedOutTitle>
+                <LoggedOutSubtitle>
+                    Log in or create an account to view your profile, rankings, and more.
+                </LoggedOutSubtitle>
+                <AuthButtonRow>
+                    <PrimaryAuthButton href="/login">Log in</PrimaryAuthButton>
+                    <SecondaryAuthButton href="/signup">Sign up</SecondaryAuthButton>
+                </AuthButtonRow>
+            </LoggedOutCard>
+        </PageWrapper>
+    );
     if (!user) return <PageWrapper><LoadingText>User not found.</LoadingText></PageWrapper>;
 
     // sort rankings by personalElo descending
@@ -410,13 +512,14 @@ export default function ProfilePage() {
                             </UsernameRow>
                         )}
                         <EmailText>{user.email}</EmailText>
+                        <SignOutButton onClick={handleSignOut}>Sign out</SignOutButton>
                     </UserInfo>
                 </AvatarRow>
 
                 <StatsRow>
                     <StatBlock>
-                        <StatNumber>{user.myRankings?.length ?? 0}</StatNumber>
-                        <StatLabel>Ranked</StatLabel>
+                        <StatNumber>{posts.length}</StatNumber>
+                        <StatLabel>Posts</StatLabel>
                     </StatBlock>
                     <StatBlock>
                         <StatNumber>{user.followers?.length ?? 0}</StatNumber>
@@ -428,22 +531,20 @@ export default function ProfilePage() {
                     </StatBlock>
                 </StatsRow>
 
-                <SectionTitle>Rankings</SectionTitle>
-                <RankingList>
-                    {sortedRankings.length === 0 ? (
-                        <EmptyState>No rankings yet — start dueling to build your list!</EmptyState>
+                <SectionTitle>Posts</SectionTitle>
+                <PostList>
+                    {posts.length === 0 ? (
+                        <EmptyState>No posts yet — visit a city and share your experience!</EmptyState>
                     ) : (
-                        sortedRankings.map((ranking: any, index: number) => (
-                            <RankingItem key={ranking._id} style={{ animationDelay: `${index * 0.05}s` }}>
-                                <RankNumber>#{index + 1}</RankNumber>
-                                <RankName>
-                                    {ranking.destinationId?.name ?? 'Unknown destination'}
-                                </RankName>
-                                <RankElo>{ranking.personalElo} pts</RankElo>
-                            </RankingItem>
+                        posts.map((post: any) => (
+                            <PostCard
+                                key={post._id}
+                                post={post}
+                                currentUserId={userId ?? undefined}
+                            />
                         ))
                     )}
-                </RankingList>
+                </PostList>
             </ProfileCard>
         </PageWrapper>
     );

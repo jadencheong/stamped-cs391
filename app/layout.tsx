@@ -8,6 +8,9 @@
  *
  * Ellen changes:
  * - added StyledComponentsRegistry to fix SSR hydration mismatch with styled-components
+ * 
+ * Anna changes:
+ * add in duel icon
  */
 
 import type { Metadata } from "next";
@@ -15,6 +18,8 @@ import { Unbounded } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import StyledComponentsRegistry from "@/lib/registry";
+// from Anna
+import DuelIcon from "./components/duel/DuelIcon";
 
 // heading fonts as custom CSS property
 // can be referenced anywhere as "--font-unbounded"
@@ -46,6 +51,7 @@ export default function RootLayout({
         <StyledComponentsRegistry>
             <Nav />
             { children }
+            <DuelIcon />
         </StyledComponentsRegistry>
         </body>
         </html>
