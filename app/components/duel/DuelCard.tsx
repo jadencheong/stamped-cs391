@@ -73,7 +73,7 @@ const StyledImage = styled(Image)`
 const TitleRow = styled.div`
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 5%;
     position: relative; /* for tooltip positioning */
     z-index: 100;
 `;
@@ -130,6 +130,7 @@ const InfoButton = styled.div`
 
 // title of destination for card
 const CityTitle = styled.h2`
+    white-space: nowrap; /* try to force it to one line */
     font-family: 'Helvetica', sans-serif;
     font-size: calc(4px + 2vw);
     font-weight: 700;
@@ -138,11 +139,11 @@ const CityTitle = styled.h2`
 `;
 
 // the choice buttons
-const SelectButton = styled.button<{ $variantColor?: string }>`
+const SelectButton = styled.button<{ $buttonColor?: string }>` // Changed name here
     width: 100%;
     padding: 3.5%;
-    /* button color dependent on which button it is */
-    background-color: ${props => props.$variantColor || '#7DC4D4'};
+    /* Use the $buttonColor prop, or default to the sky blue if missing */
+    background-color: ${props => props.$buttonColor || '#7DC4D4'}; 
     color: white;
     font-weight: 700;
     border: none;
@@ -150,7 +151,6 @@ const SelectButton = styled.button<{ $variantColor?: string }>`
     cursor: pointer;
     transition: all 0.2s ease;
 
-    /* move it up a little on hover so people know where they might clikc */
     &:hover {
         filter: brightness(0.9);
         transform: translateY(-2px);
@@ -162,7 +162,6 @@ const SelectButton = styled.button<{ $variantColor?: string }>`
 
 export const DuelCard = ({ city, onSelect, buttonColor }: any) => (
     <CardContainer>
-        {/* everything inside this div will shimmy! */}
         <ContentWrapper className="shimmy-element">
             <ImageWrapper>
                 <StyledImage src={city.imageUrl} alt={city.name} fill />
@@ -173,14 +172,12 @@ export const DuelCard = ({ city, onSelect, buttonColor }: any) => (
                 <InfoButton>
                     <Info size={20} />
                     <Tooltip>{city.description}</Tooltip>
-
                 </InfoButton>
             </TitleRow>
         </ContentWrapper>
 
-
         <SelectButton 
-            $variantColor={buttonColor} 
+            $buttonColor={buttonColor} // Pass the color here
             onClick={() => onSelect(city._id)}
         >
             Choose {city.name}

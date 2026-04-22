@@ -1,5 +1,5 @@
 // this file actually sends data somewhere after the duels
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import dbConnect from '@/lib/db';
 import User from '@/lib/models/User';
@@ -7,6 +7,102 @@ import Destination from '@/lib/models/Destination';
 import Duel from '@/lib/models/Duel';
 // i'll implemnt this later, placeholder for now
 import { calculateEloChange } from '@/lib/elo';
+
+
+export async function GET(req: NextRequest) {
+    // connect to mongodb
+    await dbConnect();
+
+    // parsung query parameters from incoming url
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get('userId'); 
+    const challengerId = searchParams.get('challengerId'); 
+
+    try {
+        // fetch the user, populate the rankings 
+        const user = await User.findById(userId).populate('myRankings.destinationId');
+        
+        // ensure user exists and has enough cities to duel 
+        if (!user || user.myRankings.length < 2) {
+            return NextResponse.json({ error: "Add more posts!" }, { status: 400 });
+        }
+
+        
+        const rankings = user.myRankings;
+
+        // challenger gauntlet fro when a city is climbing the leaderboard 
+        if (challengerId && challengerId !== 'undefined') {
+            // refetch, filter for valid destinations
+            const user = await User.findById(userId).populate('myRankings.destinationId');
+            const rankings = user.myRankings.filter((r: any) => r.destinationId && r.destinationId._id);
+
+            // sort by Elo to creater a "ladder" for challenger climbing 
+            const sortedLadder = [...rankings].sort((a: any, b: any) => {
+                if (a.personalElo !== b.personalElo) {
+                    return a.personalElo - b.personalElo; 
+                }
+                // use ID string as tie breaker/precent infinite loops 
+                return String(a.destinationId._id).localeCompare(String(b.destinationId._id));
+            });
+
+            // find current position of challener in sorted ladder
+            const currentIndex = sortedLadder.findIndex((r: any) => 
+                r.destinationId._id.toString() === challengerId
+            );
+
+            const challengerRank = sortedLadder[currentIndex];
+
+            // if challenger is not at the top of the ladder, pick city above it as next comeponent 
+            if (currentIndex < sortedLadder.length - 1) {
+                const opponent = sortedLadder[currentIndex + 1];
+                return NextResponse.json({ 
+                    pair: [challengerRank.destinationId, opponent.destinationId] 
+                });
+            } 
+
+            // challanger aready at the top, return victory
+            return NextResponse.json({ 
+                pair: [challengerRank.destinationId, sortedLadder[sortedLadder.length - 2]?.destinationId],
+                isVictory: true 
+            });
+        }
+
+        // fresh enter detection, trigger a gauntlet prompt if city never dueled 
+        const freshEntry = rankings.find((r: any) => !r.timesDuelled || r.timesDuelled === 0);
+        
+        if (freshEntry) {
+            // sort by elo to find weakest city 
+            const sorted = [...rankings].sort((a: any, b: any) => a.personalElo - b.personalElo);
+            // new entry fights city at bottom
+            // handles edge case where it is the bottom 
+            const opponent = sorted[0].destinationId._id.toString() === freshEntry.destinationId._id.toString() 
+                ? sorted[1] 
+                : sorted[0];
+
+            return NextResponse.json({ 
+        pair: [freshEntry.destinationId, opponent.destinationId],
+        isNewChallenger: true // show new entry modals 
+    });
+        }
+
+        // random duel mode 
+        const sorted = [...rankings].sort((a: any, b: any) => a.personalElo - b.personalElo);
+        
+        // pcik random index (besides very last)
+        const startIndex = Math.floor(Math.random() * (sorted.length - 1));
+        
+        // get 2 neighbors so duel is competitive 
+        return NextResponse.json({ 
+            pair: [sorted[startIndex].destinationId, sorted[startIndex + 1].destinationId] 
+        });
+
+    } catch (error) {
+        console.error("GET Duel Error:", error);
+        return NextResponse.json({ error: "Failed to fetch duel" }, { status: 500 });
+    }
+}
+
+
 
 export async function POST(req: Request) {
      
@@ -23,7 +119,7 @@ export async function POST(req: Request) {
     try {
 
         // grab the results from the json request
-        const { userId, winnerId, loserId, isDraw } = await req.json();
+        const { userId, winnerId, loserId, isDraw, challengerId } = await req.json();
 
         // get the current rating's from the active User's personal list
         const user = await User.findById(userId);
@@ -38,8 +134,13 @@ export async function POST(req: Request) {
         const oldLoserElo = loserRank?.personalElo || 1000;
             
         // now actually use the math
-        // TODO: actually implement that lol
-        const {gain, loss} = calculateEloChange(oldWinnerElo, oldLoserElo, isDraw);
+        let {gain, loss} = calculateEloChange(oldWinnerElo, oldLoserElo, isDraw);
+
+
+        if (challengerId && winnerId === challengerId && gain <= 0 && !isDraw) {
+            gain = 2; 
+            loss = -2;
+        }
 
         // now update the User's personal Elo rankings (have to ensure it's attomic)
             
@@ -48,14 +149,24 @@ export async function POST(req: Request) {
             {_id : userId, "myRankings.destinationId" :winnerId},
             // '$inc' increments the score rather than setting it to current total + gain, so if there's a race condition,
             // no data gets lost in that process
-            { $inc: {"myRankings.$.personalElo": gain } },
+            { 
+                $inc: { 
+                    "myRankings.$.personalElo": gain,
+                    "myRankings.$.timesDuelled": 1
+                } 
+            },
             { session }
         );
 
             // update the loser 
             await User.updateOne(
                 { _id: userId, "myRankings.destinationId": loserId },
-                { $inc: { "myRankings.$.personalElo": loss } },
+                    {
+                        $inc: { 
+                        "myRankings.$.personalElo": loss,
+                        "myRankings.$.timesDuelled": 1 
+                    }
+                },
                 { session }
             );
 

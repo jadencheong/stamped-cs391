@@ -8,7 +8,7 @@ import PostForm from '@/components/PostForm';
 /* created by Alen */
 
 // TODO: replace with real auth once login is implemented
-const HARDCODED_USER_ID = 'PUT_YOUR_USER_HERE';
+const HARDCODED_USER_ID = '000000000000000000000001';
 
 type ResolvedCity = {
     _id: string;
