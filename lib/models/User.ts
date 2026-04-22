@@ -3,7 +3,7 @@ import mongoose, { Schema, model, models } from 'mongoose';
 const userSchema = new Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
-  verified: { type: Boolean, default: false },
+  verified: { type: Boolean, default: true },
   verificationToken: { type: String, default: null },
   password: { type: String, required: true },
   myRankings: [{
