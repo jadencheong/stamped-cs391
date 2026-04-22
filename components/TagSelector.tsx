@@ -14,13 +14,12 @@
  *
  *
  *  created by: Jaden
- *
- *  we'll replace w/ styled components when we get to it — just wanted to test logic and build
  */
 
 'use client';
 
 import { TAGS_BY_CATEGORY, Tag } from '@/lib/tags';
+import styled from 'styled-components';
 
 // defining TagSelectorProps object
 interface TagSelectorProps {
@@ -29,6 +28,67 @@ interface TagSelectorProps {
     // call when selection changes
     onChange: (tags: Tag[]) => void;
 }
+
+// STYLED COMPONENTS
+
+// outer wrapper for entire selector
+const Wrapper = styled.div`
+  width: 100%;
+`;
+
+// count indicator at top
+// shows "x/3 selected"
+const CountLabel = styled.p`
+  font-size: 11px;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 16px;
+`;
+
+// section for each category group
+const CategorySection = styled.div`
+  margin-bottom: 16px;
+`;
+
+// category name label
+const CategoryLabel = styled.p`
+  font-size: 11px;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 8px;
+`;
+
+// row of chips for each category
+const ChipRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+`;
+
+// individual tag chip — styles change based on selected/disabled state
+const TagChip = styled.button<{ $selected: boolean; $disabled: boolean }>`
+  padding: 5px 12px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: ${props => props.$disabled ? 'not-allowed' : 'pointer'};
+  opacity: ${props => props.$disabled ? 0.4 : 1};
+  border: ${props => props.$selected ? '1.5px solid #326273' : '0.5px solid #e5e7eb'};
+  background: ${props => props.$selected ? '#326273' : '#ffffff'};
+  color: ${props => props.$selected ? '#ffffff' : '#374151'};
+  transition: all 0.15s ease;
+`;
+
+// validation message shown when 0 tags selected
+const ValidationText = styled.p`
+  font-size: 12px;
+  color: #ef4444;
+  margin: 8px 0 0;
+`;
+
+// END OF STYLED COMPONENTS
 
 // receives selectedTags from parent and calls onChange to tell parents to update
 export default function TagSelector({ selectedTags, onChange }: TagSelectorProps) {
@@ -49,51 +109,37 @@ export default function TagSelector({ selectedTags, onChange }: TagSelectorProps
     };
 
     return (
-        <div>
-            {/* min/max reminder */}
-            <p>Select 1–3 tags ({selectedTags.length}/3 selected)</p>
+        <Wrapper>
+            <CountLabel>
+                Select 1–3 tags ({selectedTags.length}/3 selected)
+            </CountLabel>
 
-            {/* render each category section
-                converts object into array of [key, value] pairs based off of
-                the [category, specific tag]
-            */}
             {Object.entries(TAGS_BY_CATEGORY).map(([category, tags]) => (
-                <div key={category}>
-                    <p>{category}</p>
-
-                    {/* render chips for each tag in this category */}
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                <CategorySection key={category}>
+                    <CategoryLabel>{category}</CategoryLabel>
+                    <ChipRow>
                         {tags.map(tag => {
                             const isSelected = selectedTags.includes(tag);
                             const isDisabled = !isSelected && selectedTags.length >= 3;
-
                             return (
-                                <button
+                                <TagChip
                                     key={tag}
                                     onClick={() => handleTagClick(tag)}
                                     disabled={isDisabled}
-                                    style={{
-                                        padding: '6px 12px',
-                                        borderRadius: '999px',
-                                        border: isSelected ? '2px solid black' : '1px solid gray',
-                                        background: isSelected ? 'black' : 'white',
-                                        color: isSelected ? 'white' : 'black',
-                                        opacity: isDisabled ? 0.4 : 1,
-                                        cursor: isDisabled ? 'not-allowed' : 'pointer',
-                                    }}
+                                    $selected={isSelected}
+                                    $disabled={isDisabled}
                                 >
                                     {tag}
-                                </button>
+                                </TagChip>
                             );
                         })}
-                    </div>
-                </div>
+                    </ChipRow>
+                </CategorySection>
             ))}
 
-            {/* validation message — shown if user tries to proceed with 0 tags */}
             {selectedTags.length === 0 && (
-                <p style={{ color: 'red' }}>Please select at least 1 tag</p>
+                <ValidationText>Please select at least 1 tag</ValidationText>
             )}
-        </div>
+        </Wrapper>
     );
 }

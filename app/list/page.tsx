@@ -21,10 +21,126 @@ import User from '@/lib/models/User';
 import Destination from '@/lib/models/Destination';
 import Image from 'next/image';
 import Link from 'next/link';
+import styled from 'styled-components';
 
 // todo: replace with real session userId once NextAuth is integrated (Ellen's auth)
 // for now using a hardcoded placeholder so the page can be built and tested
 const TEMP_USER_ID = '000000000000000000000001';
+
+// STYLED COMPONENTS
+
+const PageWrapper = styled.div`
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem;
+    background: #EEEEEE;
+    min-height: 100vh;
+`;
+
+// page heading
+const PageTitle = styled.h1`
+    font-family: 'Unbounded', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 4px;
+`;
+
+const PageSubtitle = styled.p`
+    font-size: 13px;
+    color: #9ca3af;
+    margin: 0 0 2rem;
+`;
+
+// empty state message
+const EmptyState = styled.p`
+    font-size: 13px;
+    color: #9ca3af;
+    text-align: center;
+    padding: 4rem 0;
+`;
+
+// list container — no default ol styling
+const RankingList = styled.ol`
+    list-style: none;
+    padding: 0;
+    margin: 0;
+`;
+
+// individual ranking row
+const RankingRow = styled.li`
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: #ffffff;
+    border-radius: 16px;
+    margin-bottom: 10px;
+    height: 80px;
+    overflow: hidden;
+`;
+
+// rank number — e.g. #1
+const RankNumber = styled.span`
+    font-family: 'Unbounded', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #326273;
+    min-width: 2.5rem;
+`;
+
+// city thumbnail
+const CityThumb = styled(Image)`
+    border-radius: 8px;
+    object-fit: cover;
+`;
+
+// city info column
+const CityInfo = styled.div`
+    flex: 1;
+`;
+
+// city name link
+const CityName = styled(Link)`
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 4px;
+
+    &:hover {
+        color: #326273;
+    }
+`;
+
+// tag row
+const TagRow = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+`;
+
+// individual tag pill
+const TagPill = styled.span`
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: #fff7ed;
+    color: #BF7245;
+    border: 0.5px solid #F19C4C;
+`;
+
+// elo score on right side
+const EloScore = styled.span`
+    font-size: 13px;
+    font-weight: 500;
+    color: #326273;
+    white-space: nowrap;
+`;
+
+// END OF STYLED COMPONENTS
 
 // fetches data directly from MongoDB without API route
 // server component — can directly connect to db, so no need for API route (which is for
@@ -37,7 +153,7 @@ export default async function YourListPage() {
         destinationId: {
             name: string;
             tags: { label: string; count: number }[];
-            photoUrl?: string;
+            imageUrl?: string;
         } | null;
         personalElo: number;
     }[] = [];
@@ -53,7 +169,7 @@ export default async function YourListPage() {
         const user = await User.findById(TEMP_USER_ID).populate({
             path: 'myRankings.destinationId',
             model: Destination,
-            select: 'name tags photoUrl',
+            select: 'name tags imageUrl',
         });
 
         if (user && user.myRankings.length > 0) {
@@ -71,95 +187,54 @@ export default async function YourListPage() {
     }
 
     return (
-        <div style={{ padding: '2rem '}}>
+        <PageWrapper>
+            <PageTitle>Your List</PageTitle>
+            <PageSubtitle>Your personal city rankings, ordered by your duels.</PageSubtitle>
 
-            {/* page header */}
-            <h1>Your List</h1>
-            <p>Your personal city rankings, ordered by your duels.</p>
-
-            {/* empty state
-                only show when there are no rankings
-            */}
             {rankings.length === 0 && (
-                <p>You have not stamped any cities yet — start by searching for a city.</p>
+                <EmptyState>You haven&apos;t stamped any cities yet — start by searching for a city.</EmptyState>
             )}
 
-            {/* rankings list
-                entry.destinationId --> after .populate operator, this becomes full Destination doc.
-                index + 1 --> adjust so ranks start at 1 instead of index (starting at 0)
-            */}
             {rankings.length > 0 && (
-                <ol style={{ listStyle: 'none', padding: 0, marginTop: '1.5rem' }}>
+                <RankingList>
                     {rankings.map((entry, index) => {
                         const city = entry.destinationId;
                         return (
-                            <li
-                                key={entry._id?.toString()}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '1rem',
-                                    padding: '1rem 0',
-                                    borderBottom: '1px solid #eee',
-                                }}
-                            >
-                                {/* rank number
-                                    minWidth --> ensure alignment between single and double digit ranks
-                                */}
-                                <span style={{ fontSize: '1.5rem', fontWeight: 'bold', minWidth: '2rem' }}>
-                                    #{index + 1}
-                                </span>
+                            <RankingRow key={entry._id?.toString()}>
 
-                                {/* city photo
-                                    only render image if photoURL exists
-                                */}
-                                {city?.photoUrl && (
-                                    <Image
-                                        src={city.photoUrl}
+                                {/* rank number */}
+                                <RankNumber>#{index + 1}</RankNumber>
+
+                                {/* city photo — only render if imageUrl exists */}
+                                {city?.imageUrl && (
+                                    <CityThumb
+                                        src={city.imageUrl}
                                         alt={city.name}
                                         width={60}
                                         height={60}
-                                        style={{ objectFit: 'cover', borderRadius: '8px' }}
                                     />
                                 )}
 
-                                {/* city info */}
-                                <div style={{ flex: 1 }}>
-                                    <Link
-                                        href={`/cities/${city?.name?.toLowerCase().replace(/\s+/g, '-')}`}
-                                        style={{ margin: 0, fontWeight: 'bold', textDecoration: 'none', color: 'black' }}
-                                    >
+                                {/* city name + tags */}
+                                <CityInfo>
+                                    <CityName href={`/cities/${city?.name?.toLowerCase().replace(/\s+/g, '-')}`}>
                                         {city?.name ?? 'Unknown city'}
-                                    </Link>
-
-                                    {/* tags */}
-                                    <div style={{ display: 'flex', gap: '6px', marginTop: '4px', flexWrap: 'wrap' }}>
+                                    </CityName>
+                                    <TagRow>
                                         {city?.tags?.slice(0, 3).map((tag: { label: string }) => (
-                                            <span
-                                                key={tag.label}
-                                                style={{
-                                                    fontSize: '12px',
-                                                    padding: '2px 8px',
-                                                    borderRadius: '999px',
-                                                    border: '1px solid #ccc',
-                                                }}
-                                            >
-                                                {tag.label}
-                                            </span>
+                                            <TagPill key={tag.label}>{tag.label}</TagPill>
                                         ))}
-                                    </div>
-                                </div>
+                                    </TagRow>
+                                </CityInfo>
 
                                 {/* personal elo score */}
-                                <span style={{ fontSize: '0.9rem', color: '#888' }}>
-                                    {entry.personalElo} pts
-                                </span>
+                                <EloScore>{entry.personalElo} pts</EloScore>
 
-                            </li>
+                            </RankingRow>
                         );
                     })}
-                </ol>
+                </RankingList>
             )}
-        </div>
+        </PageWrapper>
     );
 }
