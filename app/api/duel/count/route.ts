@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import User from '@/lib/models/User';
 
+// created by Anna
+
 export async function GET(req: NextRequest) {
     await dbConnect();
     const { searchParams } = new URL(req.url);

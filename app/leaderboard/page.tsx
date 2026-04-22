@@ -13,6 +13,7 @@
 
 import dbConnect from '@/lib/db';
 import Destination from '@/lib/models/Destination';
+import User from '@/lib/models/User';
 import Image from 'next/image';
 import Link from 'next/link';
 import styled from 'styled-components'
@@ -155,18 +156,47 @@ export default async function LeaderboardPage() {
     try {
         await dbConnect();
 
-        // fetch all cities sorted by globalAverageScore sorted from highest > lowest
-        // highest score = rank #1 globally
-        // only keep the fields needed for it
-        const results = await Destination.find()
-            .sort({ globalAverageScore: -1 })
-            .select('name country imageUrl globalAverageScore timesDuelled tags')
-            // Mongoose wraps results in Mongoose Document object (JS object with extra methods)
-            // lean() strips away methods since we just need reading/displaying datas
-            .lean();
+        // grab all the destinations, lean so they dont hydrate the document and clog stuff up
+        const allDestinations = await Destination.find().lean();
 
-        cities = results as unknown as DestinationEntry[];
+        // grab the users
+        const users = await User.find({}, 'myRankings.destinationId').lean();
 
+        // find how many users have ranked each destination
+        const countMap: Record<string, number> = {};
+            users.forEach(user => {
+                user.myRankings.forEach((ranking: any) => {
+                    const id = ranking.destinationId.toString();
+                    countMap[id] = (countMap[id] || 0) + 1;
+                });
+            });
+
+        // from Anna, math changes 
+        cities = allDestinations.map((city: any) => {
+            // data normalization to prevent divide by 0 errors
+            const id = city._id.toString();
+            const userCount = countMap[id] || 0;
+
+            const duels = city.timesDuelled || 0;
+            const totalPoints = city.globalTotalScore || 0;
+
+        
+            // weight score by user count 
+            const averageScore = duels > 0 
+                ? (totalPoints / userCount) 
+                : 1000;
+
+            // send out results
+            return {
+                ...city,
+                _id: id,
+                globalAverageScore: Math.round(averageScore), // get rid of decimals 
+                userCount 
+            };
+        }).sort((a, b) => b.globalAverageScore - a.globalAverageScore);
+
+    // no more Anna
+       
     } catch (err) {
         console.error('[/leaderboard] Failed to fetch destinations:', err);
     }
