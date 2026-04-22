@@ -35,7 +35,7 @@ export default function Nav() {
             alignItems: 'center',
             padding: '12px 0',
             borderBottom: '1px solid #eee',
-            background: 'white',
+            background: '#EEEEEE',
         }}>
 
             {/* each link styling with path */}
