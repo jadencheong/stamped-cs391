@@ -48,13 +48,13 @@ export async function POST(req: Request) {
             { new: true }
         );
 
-        // NEW LOGIC: Count how many POSTS this user actually has in the database
+        // count posts in db
         const actualPostCount = await Post.countDocuments({ userId });
 
         return NextResponse.json({ 
             success: true, 
             post, 
-            totalPosts: actualPostCount // Send the REAL post count
+            totalPosts: actualPostCount // send the post count
         }, { status: 201 });
 
         } catch (error) {
