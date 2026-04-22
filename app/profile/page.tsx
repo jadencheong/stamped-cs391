@@ -338,25 +338,138 @@ const SecondaryAuthButton = styled.a`
     }
 `;
 
-const SignOutButton = styled.button`
-    background: none;
-    border: 1.5px solid #d5e4e8;
-    border-radius: 0.6rem;
-    padding: 0.4rem 0.85rem;
-    font-family: 'Helvetica', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #BF7245;
-    cursor: pointer;
-    transition: all 0.2s ease;
+const MenuWrapper = styled.div`
+    position: relative;
+    margin-left: auto;
     align-self: flex-start;
+`;
+
+const ThreeDotsButton = styled.button`
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #5C9EAD;
+    font-size: 1.2rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    transition: background 0.2s ease;
+    letter-spacing: 0.05em;
 
     &:hover {
-        border-color: #BF7245;
-        background: #FAECE7;
+        background: #f0f7f9;
     }
+`;
+
+const DropdownMenu = styled.div`
+    position: absolute;
+    top: 2rem;
+    right: 0;
+    background: #ffffff;
+    border: 0.5px solid #d5e4e8;
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 24px rgba(50, 98, 115, 0.12);
+    overflow: hidden;
+    min-width: 160px;
+    z-index: 10;
+`;
+
+const DropdownItem = styled.button<{ $danger?: boolean }>`
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    text-align: left;
+    font-family: 'Helvetica', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: ${props => props.$danger ? '#BF7245' : '#326273'};
+    cursor: pointer;
+    transition: background 0.15s ease;
+
+    &:hover {
+        background: ${props => props.$danger ? '#FAECE7' : '#f0f7f9'};
+    }
+`;
+
+const ConfirmOverlay = styled.div`
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 1.5rem;
+`;
+
+const ConfirmCard = styled.div`
+    background: #ffffff;
+    border-radius: 1.25rem;
+    padding: 2rem;
+    width: 100%;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+`;
+
+const ConfirmTitle = styled.h2`
+    font-family: 'Helvetica', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #326273;
+    margin: 0;
+`;
+
+const ConfirmText = styled.p`
+    font-family: 'Helvetica', sans-serif;
+    font-size: 0.85rem;
+    color: #5C9EAD;
+    margin: 0;
+    line-height: 1.5;
+`;
+
+const ConfirmButtonRow = styled.div`
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+`;
+
+const ConfirmDeleteButton = styled.button`
+    flex: 1;
+    padding: 0.75rem;
+    background: #BF7245;
+    color: #ffffff;
+    font-family: 'Helvetica', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 0.6rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) { filter: brightness(1.1); }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+`;
+
+const ConfirmCancelButton = styled.button`
+    flex: 1;
+    padding: 0.75rem;
+    background: none;
+    color: #326273;
+    font-family: 'Helvetica', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border: 1.5px solid #d5e4e8;
+    border-radius: 0.6rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover { border-color: #5C9EAD; }
 `;
 
 export default function ProfilePage() {
@@ -369,6 +482,10 @@ export default function ProfilePage() {
     const [newUsername, setNewUsername] = useState('');
     const [editError, setEditError] = useState('');
     const [isSaving, setIsSaving] = useState(false);
+
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         const id = localStorage.getItem('userId');
@@ -390,7 +507,6 @@ export default function ProfilePage() {
                 const postsData = await postsRes.json();
 
                 setUser(userData);
-                console.log('user data:', userData);
                 setNewUsername(userData.username);
                 setPosts(postsData.posts ?? []);
             } catch (err) {
@@ -452,6 +568,26 @@ export default function ProfilePage() {
         router.push('/login');
     };
 
+    const handleDeleteAccount = async () => {
+        if (!userId) return;
+        setIsDeleting(true);
+
+        try {
+            const res = await fetch(`/api/users/${userId}`, {
+                method: 'DELETE',
+            });
+
+            if (res.ok) {
+                localStorage.removeItem('userId');
+                router.push('/signup');
+            }
+        } catch (err) {
+            console.error('Failed to delete account:', err);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
     // get initials for avatar — safe fallback if username not yet loaded
     const getInitials = (username: string | undefined) => {
         if (!username) return '??';
@@ -481,71 +617,111 @@ export default function ProfilePage() {
     );
 
     return (
-        <PageWrapper>
-            <ProfileCard>
-                <AvatarRow>
-                    <Avatar>{getInitials(user.username)}</Avatar>
-                    <UserInfo>
-                        {isEditing ? (
-                            <>
-                                <EditRow>
-                                    <EditInput
-                                        value={newUsername}
-                                        onChange={e => setNewUsername(e.target.value)}
-                                        autoFocus
-                                    />
-                                    <SaveButton onClick={handleEditSave} disabled={isSaving}>
-                                        {isSaving ? 'Saving...' : 'Save'}
-                                    </SaveButton>
-                                    <CancelButton onClick={handleCancelEdit}>
-                                        Cancel
-                                    </CancelButton>
-                                </EditRow>
-                                {editError && <EditError>{editError}</EditError>}
-                            </>
+        <>
+            {isConfirmingDelete && (
+                <ConfirmOverlay>
+                    <ConfirmCard>
+                        <ConfirmTitle>Delete your account?</ConfirmTitle>
+                        <ConfirmText>
+                            This will permanently delete your account, posts, and rankings. This cannot be undone.
+                        </ConfirmText>
+                        <ConfirmButtonRow>
+                            <ConfirmCancelButton onClick={() => setIsConfirmingDelete(false)}>
+                                Cancel
+                            </ConfirmCancelButton>
+                            <ConfirmDeleteButton onClick={handleDeleteAccount} disabled={isDeleting}>
+                                {isDeleting ? 'Deleting...' : 'Delete'}
+                            </ConfirmDeleteButton>
+                        </ConfirmButtonRow>
+                    </ConfirmCard>
+                </ConfirmOverlay>
+            )}
+            <PageWrapper>
+                <ProfileCard>
+                    <AvatarRow>
+                        <Avatar>{getInitials(user.username)}</Avatar>
+                        <UserInfo>
+                            {isEditing ? (
+                                <>
+                                    <EditRow>
+                                        <EditInput
+                                            value={newUsername}
+                                            onChange={e => setNewUsername(e.target.value)}
+                                            autoFocus
+                                        />
+                                        <SaveButton onClick={handleEditSave} disabled={isSaving}>
+                                            {isSaving ? 'Saving...' : 'Save'}
+                                        </SaveButton>
+                                        <CancelButton onClick={handleCancelEdit}>
+                                            Cancel
+                                        </CancelButton>
+                                    </EditRow>
+                                    {editError && <EditError>{editError}</EditError>}
+                                </>
+                            ) : (
+                                <UsernameRow>
+                                    <Username>@{user.username}</Username>
+                                    <EditButton onClick={() => setIsEditing(true)}>
+                                        Edit
+                                    </EditButton>
+                                </UsernameRow>
+                            )}
+                            <EmailText>{user.email}</EmailText>
+                        </UserInfo>
+                        <MenuWrapper>
+                            <ThreeDotsButton onClick={() => setIsMenuOpen(prev => !prev)}>
+                                •••
+                            </ThreeDotsButton>
+                            {isMenuOpen && (
+                                <DropdownMenu>
+                                    <DropdownItem onClick={() => {
+                                        setIsMenuOpen(false);
+                                        handleSignOut();
+                                    }}>
+                                        Sign out
+                                    </DropdownItem>
+                                    <DropdownItem $danger onClick={() => {
+                                        setIsMenuOpen(false);
+                                        setIsConfirmingDelete(true);
+                                    }}>
+                                        Delete account
+                                    </DropdownItem>
+                                </DropdownMenu>
+                            )}
+                        </MenuWrapper>
+                    </AvatarRow>
+
+                    <StatsRow>
+                        <StatBlock>
+                            <StatNumber>{posts.length}</StatNumber>
+                            <StatLabel>Posts</StatLabel>
+                        </StatBlock>
+                        <StatBlock>
+                            <StatNumber>{user.followers?.length ?? 0}</StatNumber>
+                            <StatLabel>Followers</StatLabel>
+                        </StatBlock>
+                        <StatBlock>
+                            <StatNumber>{user.following?.length ?? 0}</StatNumber>
+                            <StatLabel>Following</StatLabel>
+                        </StatBlock>
+                    </StatsRow>
+
+                    <SectionTitle>Posts</SectionTitle>
+                    <PostList>
+                        {posts.length === 0 ? (
+                            <EmptyState>No posts yet — visit a city and share your experience!</EmptyState>
                         ) : (
-                            <UsernameRow>
-                                <Username>@{user.username}</Username>
-                                <EditButton onClick={() => setIsEditing(true)}>
-                                    Edit
-                                </EditButton>
-                            </UsernameRow>
+                            posts.map((post: any) => (
+                                <PostCard
+                                    key={post._id}
+                                    post={post}
+                                    currentUserId={userId ?? undefined}
+                                />
+                            ))
                         )}
-                        <EmailText>{user.email}</EmailText>
-                        <SignOutButton onClick={handleSignOut}>Sign out</SignOutButton>
-                    </UserInfo>
-                </AvatarRow>
-
-                <StatsRow>
-                    <StatBlock>
-                        <StatNumber>{posts.length}</StatNumber>
-                        <StatLabel>Posts</StatLabel>
-                    </StatBlock>
-                    <StatBlock>
-                        <StatNumber>{user.followers?.length ?? 0}</StatNumber>
-                        <StatLabel>Followers</StatLabel>
-                    </StatBlock>
-                    <StatBlock>
-                        <StatNumber>{user.following?.length ?? 0}</StatNumber>
-                        <StatLabel>Following</StatLabel>
-                    </StatBlock>
-                </StatsRow>
-
-                <SectionTitle>Posts</SectionTitle>
-                <PostList>
-                    {posts.length === 0 ? (
-                        <EmptyState>No posts yet — visit a city and share your experience!</EmptyState>
-                    ) : (
-                        posts.map((post: any) => (
-                            <PostCard
-                                key={post._id}
-                                post={post}
-                                currentUserId={userId ?? undefined}
-                            />
-                        ))
-                    )}
-                </PostList>
-            </ProfileCard>
-        </PageWrapper>
+                    </PostList>
+                </ProfileCard>
+            </PageWrapper>
+        </>
     );
 }
