@@ -81,10 +81,16 @@ const CityCountry = styled.p`
 `;
 
 export default function PostPage() {
-    const [userId] = useState<string | null>(() =>
-        typeof window !== 'undefined' ? localStorage.getItem('userId') : null
-    );
+    
+
+    const [userId, setUserId] = useState<string | null>(null);
     const [selectedCity, setSelectedCity] = useState<ResolvedCity | null>(null);
+
+    // use actual userId instead of test user 
+    useEffect(() => {
+        const savedId = localStorage.getItem('userId');
+        setUserId(savedId);
+    }, []);
 
     // city search
     if (!selectedCity) {
@@ -94,6 +100,10 @@ export default function PostPage() {
                 <SearchBar onCitySelect={(city) => setSelectedCity(city as ResolvedCity)} />
             </Wrapper>
         );
+    }
+
+    if (!userId) {
+        return <Wrapper><Heading>Loading user session...</Heading></Wrapper>;
     }
 
     //post form, city has been chosen with the search bar above

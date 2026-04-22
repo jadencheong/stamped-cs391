@@ -149,7 +149,7 @@ export default function DuelGauntlet() {
     const router = useRouter();
     
     // mock Id for development -- CHANGE LATER
-    const TEST_USER_ID = '000000000000000000000001'; 
+    
 
     // state managmenet stuff
     const [loading, setLoading] = useState(false); // global fetching state
@@ -170,6 +170,9 @@ export default function DuelGauntlet() {
     // get the challenger from the URL
     const urlChallengerId = searchParams.get('challengerId');
 
+    // userId stuff
+    const [userId, setUserId] = useState<string | null>(null);
+
     // fetch logic to grab next pair for dueling 
     const fetchNextDuel = useCallback(async (id: string | null, prevOpponent: string | null) => {
         setLoading(true);
@@ -177,7 +180,7 @@ export default function DuelGauntlet() {
 
 
         try {
-            let url = `/api/duel?userId=${TEST_USER_ID}`;
+            let url = `/api/duel?userId=${userId}`;
             // force the current specific challenger if provided (when dueling new entries)
             if (id) url += `&challengerId=${id}`;
             if (prevOpponent) url += `&lastOpponentId=${prevOpponent}`;
@@ -197,11 +200,16 @@ export default function DuelGauntlet() {
         } finally {
             setLoading(false);
         }
-    }, [TEST_USER_ID]);
+    }, [userId]);
 
 
     // intitialization effect that determines whether or not to prompt a user with a new gauntlet (series of duels)
     useEffect(() => {
+        const savedId = localStorage.getItem('userId');
+
+        setUserId(savedId);
+
+
         const checkInitialQueue = async () => {
             if (urlChallengerId) {
                 setIsCheckingQueue(false); // skip the modal if there's an existing target
@@ -209,7 +217,7 @@ export default function DuelGauntlet() {
             }
 
             try {
-                const res = await fetch(`/api/duel?userId=${TEST_USER_ID}&t=${Date.now()}`);
+                const res = await fetch(`/api/duel?userId=${userId}&t=${Date.now()}`);
                 const data = await res.json();
 
                 if (data.isNewChallenger) {
@@ -225,7 +233,7 @@ export default function DuelGauntlet() {
             }
         };
         checkInitialQueue();
-    }, [urlChallengerId, TEST_USER_ID]);
+    }, [urlChallengerId, userId]);
 
 
     // start the actual gaunlet effect once the initial checks are finished 
@@ -243,7 +251,7 @@ export default function DuelGauntlet() {
             const res = await fetch('/api/duel', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: TEST_USER_ID, winnerId, loserId, isDraw, challengerId: urlChallengerId })
+                body: JSON.stringify({ userId: userId, winnerId, loserId, isDraw, challengerId: urlChallengerId })
             });
 
             if (res.ok) {

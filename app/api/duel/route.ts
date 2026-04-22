@@ -13,10 +13,16 @@ export async function GET(req: NextRequest) {
     // connect to mongodb
     await dbConnect();
 
+    
+
     // parsung query parameters from incoming url
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId'); 
     const challengerId = searchParams.get('challengerId'); 
+
+    if (!userId || userId === 'null' || userId === 'undefined') {
+        return NextResponse.json({ error: "Valid User ID required" }, { status: 400 });
+    }
 
     try {
         // fetch the user, populate the rankings 
@@ -56,13 +62,16 @@ export async function GET(req: NextRequest) {
             if (currentIndex < sortedLadder.length - 1) {
                 const opponent = sortedLadder[currentIndex + 1];
                 return NextResponse.json({ 
-                    pair: [challengerRank.destinationId, opponent.destinationId] 
+                    pair: [challengerRank.destinationId, opponent.destinationId],
+                    isVictory: false // explicitly state we are still climbing
                 });
-            } 
-
+            }
             // challanger aready at the top, return victory
             return NextResponse.json({ 
-                pair: [challengerRank.destinationId, sortedLadder[sortedLadder.length - 2]?.destinationId],
+                pair: [
+                    challengerRank.destinationId, 
+                    sortedLadder[sortedLadder.length - 2]?.destinationId || challengerRank.destinationId
+                ],
                 isVictory: true 
             });
         }
@@ -120,6 +129,10 @@ export async function POST(req: Request) {
 
         // grab the results from the json request
         const { userId, winnerId, loserId, isDraw, challengerId } = await req.json();
+
+        if (!userId || userId === 'null' || userId === 'undefined') {
+            return NextResponse.json({ error: "Valid User ID required" }, { status: 400 });
+        }
 
         // get the current rating's from the active User's personal list
         const user = await User.findById(userId);
