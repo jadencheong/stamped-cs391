@@ -48,11 +48,14 @@ const NotificationDot = styled.div`
 export default function DuelIcon() {
     const [undueledCount, setUndueledCount] = useState(0);
     const router = useRouter();
-    const TEST_USER_ID = '000000000000000000000001';
 
     useEffect(() => {
             const checkNotification = async () => {
-                const res = await fetch(`/api/duel/count?userId=${TEST_USER_ID}&t=${Date.now()}`);
+                const currentUserId = localStorage.getItem('userId');
+
+                if (!currentUserId || currentUserId === 'null') return;
+
+                const res = await fetch(`/api/duel/count?userId=${currentUserId}&t=${Date.now()}`);
                 const data = await res.json();
                 setUndueledCount(data.count || 0);
             };
