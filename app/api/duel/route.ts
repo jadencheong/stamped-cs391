@@ -8,6 +8,8 @@ import Duel from '@/lib/models/Duel';
 // i'll implemnt this later, placeholder for now
 import { calculateEloChange } from '@/lib/elo';
 
+// created by Anna
+
 
 export async function GET(req: NextRequest) {
     // connect to mongodb

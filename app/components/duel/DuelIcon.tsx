@@ -5,6 +5,8 @@ import { Sword } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+// created by Anna
+
 const FixedContainer = styled.div`
     position: fixed;
     bottom: 30px;

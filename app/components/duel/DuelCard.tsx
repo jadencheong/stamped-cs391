@@ -5,6 +5,8 @@ import styled, { keyframes } from 'styled-components';
 import { Info, XCircle, Sword } from 'lucide-react';
 import Image from 'next/image';
 
+// created by Anna
+
 // colors for my own reference 
 // blue slate: #326273
 // pacific blue: #5C9EAD

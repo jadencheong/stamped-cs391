@@ -1,6 +1,8 @@
 'use client';
 import styled from 'styled-components';
 
+// created by Anna
+
 // colors for my own reference 
 // blue slate: #326273
 // pacific blue: #5C9EAD
