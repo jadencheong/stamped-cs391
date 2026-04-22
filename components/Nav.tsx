@@ -12,6 +12,8 @@
  *   /profile   → User profile (Ellen)
  *
  * created by: Jaden
+ *
+ * Ellen changes: hising nav on login/signup page
  */
 
 'use client';
@@ -21,6 +23,9 @@ import { usePathname } from 'next/navigation';
 
 export default function Nav() {
     const pathname = usePathname();
+
+    // hide nav on auth pages
+    if (pathname === '/login' || pathname === '/signup') return null;
 
     return (
         // nav container styling
