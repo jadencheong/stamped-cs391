@@ -33,9 +33,9 @@ export async function PATCH(
         }
 
         // the city should be locked after creation so destinationId can be ignored if someone sends it
-        if (tags)    post.tags    = tags;
+        if (tags) post.tags = tags;
         if (caption !== undefined) post.caption = caption;
-        if (images)  post.images  = images;
+        if (images) post.images = images;
 
         await post.save();
 
@@ -56,12 +56,14 @@ export async function DELETE(
     try {
         const { userId } = await req.json();
 
+        //look for the post we are deleting based on its id
         const post = await Post.findById(params.id);
         if (!post) {
             return NextResponse.json({ error: 'Post not found' }, { status: 404 });
         }
 
         // TODO: i think once auth is implement this probably needs to be changed to session based but lmk
+        //if the userId does not match the userId of the post then they are not authorized to delete it
         if (post.userId.toString() !== userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
@@ -84,5 +86,29 @@ export async function DELETE(
     } catch (error) {
         console.error('Delete post error:', error);
         return NextResponse.json({ error: 'Failed to delete post' }, { status: 500 });
+    }
+}
+
+/* GET POST */
+// the difference between this GET and my GET already in posts/route.ts is that this GET will retrieve a single post
+// this is so that edit post can fetch a single post
+export async function GET(
+    req: Request,
+    { params }: { params: { id: string } }
+) {
+    await dbConnect();
+    try {
+        const post = await Post.findById(params.id)
+            .populate('userId', 'username')
+            .populate('destinationId', 'name');
+
+        if (!post) {
+            return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+        }
+
+        return NextResponse.json({ post });
+    } catch (error) {
+        console.error('Fetch post error:', error);
+        return NextResponse.json({ error: 'Failed to fetch post' }, { status: 500 });
     }
 }

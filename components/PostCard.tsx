@@ -6,14 +6,15 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 import { Tag } from '@/lib/tags';
+import {useState} from "react";
 
 type Post = {
     _id: string;
-    userId:        { _id: string; username: string };
+    userId: { _id: string; username: string };
     destinationId: { _id: string; name: string };
-    tags:    Tag[];
+    tags: Tag[];
     caption: string;
-    images:  string[];
+    images: string[];
 };
 
 type Props = {
@@ -51,6 +52,7 @@ const Username = styled.p`
 
 const OwnerActions = styled.div`
   display: flex;
+  align-items: center;  
   gap: 8px;
 `;
 
@@ -65,6 +67,33 @@ const DeleteButton = styled.button`
   background: none;
   border: none;
   padding: 0;
+`;
+
+const ConfirmText = styled.span`
+  font-size: 11px;
+  color: #374151;
+`;
+
+const ConfirmButton = styled.button`
+  font-size: 11px;
+  color: #ffffff;
+  background: #ef4444;
+  border: none;
+  border-radius: 6px;
+  padding: 2px 8px;
+  cursor: pointer;
+  &:hover { background: #dc2626; }
+`;
+
+const CancelButton = styled.button`
+  font-size: 11px;
+  color: #6b7280;
+  background: none;
+  border: 0.5px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 2px 8px;
+  cursor: pointer;
+  &:hover { background: #f9fafb; }
 `;
 
 const TagList = styled.div`
@@ -102,6 +131,7 @@ const PostImage = styled.img`
 export default function PostCard({ post, currentUserId }: Props) {
     const router = useRouter();
     const isOwner = currentUserId === post.userId._id;
+    const [confirming, setConfirming] = useState(false);
 
     const tagVariant = (i: number): 'blue' | 'orange' => i % 2 === 0 ? 'blue' : 'orange';
 
@@ -128,7 +158,16 @@ export default function PostCard({ post, currentUserId }: Props) {
                 {isOwner && (
                     <OwnerActions>
                         <EditLink href={`/posts/${post._id}/edit`}>Edit</EditLink>
-                        <DeleteButton onClick={handleDelete}>Delete</DeleteButton>
+
+                        {confirming ? (
+                            <>
+                               <ConfirmText>Delete this post?</ConfirmText>
+                               <ConfirmButton onClick={handleDelete}>Confirm</ConfirmButton>
+                               <CancelButton onClick={() => setConfirming(false)}>Cancel</CancelButton>
+                            </>
+                        ) : (
+                            <DeleteButton onClick={handleDelete}>Delete</DeleteButton>
+                        )}
                     </OwnerActions>
                 )}
             </Header>

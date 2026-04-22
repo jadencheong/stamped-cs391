@@ -11,6 +11,7 @@ export async function POST(req: Request) {
     try {
         const { userId, destinationId, tags, caption, images } = await req.json();
 
+        // both a user and a destination are needed to make a post
         if (!userId || !destinationId) {
             return NextResponse.json(
                 { error: 'A userId and a destinationId are required' },
