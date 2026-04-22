@@ -215,6 +215,7 @@ const SuccessIcon = styled.div`
     height: 56px;
     border-radius: 50%;
     background: #326273;
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
