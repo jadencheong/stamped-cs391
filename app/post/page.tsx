@@ -8,7 +8,7 @@ import PostForm from '@/components/PostForm';
 /* created by Alen */
 
 // TODO: replace with real auth once login is implemented
-const HARDCODED_USER_ID = 'PUT_YOUR_USER_HERE';
+const HARDCODED_USER_ID = '000000000000000000000001';
 
 type ResolvedCity = {
     _id: string;
@@ -35,11 +35,13 @@ const Heading = styled.p`
 
 const BackButton = styled.button`
   font-size: 12px;
-  color: #9ca3af;
+  color: #EEEEEE;
   background: none;
   border: none;
   padding: 0;
   margin-bottom: 1.5rem;
+  cursor: pointer;
+  &:hover { color: #6b7280; }
 `;
 
 export default function PostPage() {

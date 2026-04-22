@@ -16,20 +16,20 @@ const ActionWrapper = styled.div`
     display: flex;
     justify-content: center;
     width: 100%;
-    padding-top: 2%;
-    margin-top: 2%;
+    padding-top: 5%;
+    margin-top: 5%;
     /* makes a little line on top to seperate the areas */
     border-top: 1px solid #dddddd;
 `;
 
 // button stuff!
 const DrawButton = styled.button`
-    padding: 1% 2.5%;
+    padding: 5% 7.5%;
     background-color: #326273;
     color: #eeeeee;
     font-weight: 700;
     border: none;
-    border-radius: 0.75rem;
+    border-radius: 7.5px;
     cursor: pointer;
     box-shadow: 0 4px 14px rgba(241, 156, 76, 0.4);
     transition: all 0.2s ease-in-out;

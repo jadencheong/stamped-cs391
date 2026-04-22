@@ -6,15 +6,15 @@ import PostCard from '@/components/PostCard';
 /* created by Alen */
 
 // TODO: replace this once we are done with real auth
-const HARDCODED_USER_ID = 'PUT_YOUR_USER_ID';
+const HARDCODED_USER_ID = '000000000000000000000001';
 
 type Post = {
   _id: string;
-  userId:        { _id: string; username: string };
+  userId: { _id: string; username: string };
   destinationId: { _id: string; name: string };
-  tags:    string[];
+  tags: string[];
   caption: string;
-  images:  string[];
+  images: string[];
 };
 
 const Page = styled.div`
@@ -67,12 +67,12 @@ const ErrorText = styled.p`
 `;
 
 export default function FeedPage() {
-  const [posts, setPosts]       = useState<Post[]>([]);
-  const [page, setPage]         = useState(1);
-  const [hasMore, setHasMore]   = useState(true);
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState('');
-  const [isEmpty, setIsEmpty]   = useState(false);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [isEmpty, setIsEmpty] = useState(false);
 
   const fetchPosts = useCallback(async (pageNum: number) => {
     setLoading(true);

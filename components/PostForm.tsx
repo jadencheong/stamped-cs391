@@ -4,8 +4,10 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { TAGS_BY_CATEGORY, Tag } from '@/lib/tags';
+
+import { fadeIn, shimmy, slamDown, AnimatedCardWrapper } from '../app/components/duel/DuelStyles';
 
 type ExistingPost = {
     _id: string;
@@ -21,15 +23,16 @@ type Props = {
     existingPost?: ExistingPost;
 };
 
+
 const Wrapper = styled.div`
   max-width: 480px;
   margin: 0 auto;
-  padding: 1.5rem 1rem;
+  padding: 1.5% 1%;
 `;
 
 const Label = styled.p`
   font-size: 11px;
-  color: #9ca3af;
+  color: #326273;
   margin: 0 0 6px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -39,7 +42,7 @@ const CityName = styled.p`
   font-family: 'Unbounded', sans-serif;
   font-size: 18px;
   font-weight: 600;
-  color: #111827;
+  color: #BF7245;
   margin: 0 0 4px;
 `;
 
@@ -55,7 +58,7 @@ const Section = styled.div`
 
 const CategoryLabel = styled.p`
   font-size: 11px;
-  color: #9ca3af;
+  color: #BF7245;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0 0 8px;
@@ -83,7 +86,7 @@ const TagCount = styled.span`
 const Textarea = styled.textarea`
   width: 100%;
   font-size: 13px;
-  color: #374151;
+  color: #BF7245;
   border: 0.5px solid #e5e7eb;
   border-radius: 12px;
   padding: 12px 16px;
@@ -108,7 +111,7 @@ const ErrorText = styled.p`
 
 const SubmitButton = styled.button`
   width: 100%;
-  background: #2563eb;
+  background: #326273;
   color: #ffffff;
   font-size: 14px;
   font-weight: 500;
@@ -118,6 +121,74 @@ const SubmitButton = styled.button`
   cursor: pointer;
   transition: background 0.15s ease;
 `;
+
+// from Anna, duel styled components :]
+const PromptText = styled.p`
+  color: #326273;
+  margin-bottom: 2%;
+  line-height: 1.5;
+  font-size: 15px;
+
+  strong {
+    color: #BF7245;
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 1%;
+`;
+
+// logic for variants on the button, extended from Alen's
+const ActionButton = styled(SubmitButton)<{ $variant?: 'primary' | 'secondary' }>`
+  background: ${props => props.$variant === 'secondary' ? 'transparent' : '#326273'};
+  color: ${props => props.$variant === 'secondary' ? '#BF7245' : '#EEEEEE'};
+  border: ${props => props.$variant === 'secondary' ? '1px solid #BF7245' : 'none'};
+  
+  &:hover {
+    background: ${props => props.$variant === 'secondary' ? 'rgba(191, 114, 69, 0.1)' : '#5C9EAD'};
+    transform: translateY(-1px);
+  }
+`;
+
+const PromptOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  /* re-using my fadeIn animation from my Duel components */
+  animation: ${fadeIn} 0.3s ease-out;
+`;
+
+const PromptBox = styled.div`
+  position: relative;
+  width: 90vw;
+  max-width: 450px;
+  background-color: #EEEEEE;
+  border-radius: 2%;
+  padding: 2.5%;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+  /* re-using my slamDown animation */
+  animation: ${slamDown} 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+`;
+
+
+const TitleHeader = styled.h2`
+  font-family: 'Unbounded', sans-serif;
+  font-size: calc(8px + 2vw);
+  font-weight: 700;
+  color: #326273;
+  margin-bottom: 2.5%;
+
+`;
+
+
 
 export default function PostForm({
     mode,
@@ -129,10 +200,14 @@ export default function PostForm({
     const router = useRouter();
     const isEditing = mode === 'edit';
 
-    const [tags, setTags]       = useState<Tag[]>(existingPost?.tags ?? []);
+    const [tags, setTags] = useState<Tag[]>(existingPost?.tags ?? []);
     const [caption, setCaption] = useState(existingPost?.caption ?? '');
-    const [error, setError]     = useState('');
+    const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // from Anna -- for Duel stuff
+    const [showDuelPrompt, setShowDuelPrompt] = useState(false); // track if duel  prompt visible
+    const [pendingCity, setPendingCity] = useState<{ id: string, name: string } | null>(null); // store city data for duel
 
     const toggleTag = (tag: Tag) => {
         setTags(prev => {
@@ -150,8 +225,8 @@ export default function PostForm({
         setError('');
         setLoading(true);
 
-        const url    = isEditing ? `/api/posts/${existingPost!._id}` : '/api/posts';
-        const method = isEditing ? 'PATCH' : 'POST';
+        const url= isEditing ? `/api/posts/${existingPost!._id}` : '/api/posts';
+        const method= isEditing ? 'PATCH' : 'POST';
 
         try {
             const res = await fetch(url, {
@@ -173,7 +248,15 @@ export default function PostForm({
                 return;
             }
 
-            router.push('/');
+            // from Anna --  don't prompt duel on edits, only on new post creations
+            if (!isEditing){
+                setPendingCity({ id: destinationId, name: destinationName });
+                setShowDuelPrompt(true);
+            } else {
+                router.push('/');
+            }
+
+            
 
         } catch {
             setError('Network error, please try again.');
@@ -241,6 +324,45 @@ export default function PostForm({
             <SubmitButton onClick={handleSubmit} disabled={loading}>
                 {loading ? 'Saving...' : isEditing ? 'Save Changes' : 'Post'}
             </SubmitButton>
+       
+       
+        {/* from Anna, Duel prompt overlay logic  */}
+       {showDuelPrompt && (
+            <PromptOverlay>
+                <PromptBox>
+                    <TitleHeader>
+                        Rank Your Discovery
+                    </TitleHeader>
+                    
+                    <PromptText>
+                        Would you like to duel <strong>{pendingCity?.name}</strong> against your 
+                        other destinations to settle its place in your rankings?
+                    </PromptText>
+
+                    <ButtonGroup>
+                        {/* bring user to the duel if they choose it */}
+                        <ActionButton 
+                            onClick={() => router.push(`/duel-gauntlet?challengerId=${pendingCity?.id}`)}
+                            >
+                            Duel Now
+                        </ActionButton>
+                        
+                        {/* take them out if they choose to do it later          */}
+                        <ActionButton 
+                            $variant="secondary" 
+                            onClick={() => router.push('/')}
+                        >
+                        Maybe Later
+                        </ActionButton>
+                    </ButtonGroup>
+                </PromptBox>
+            </PromptOverlay>
+            )}
+                
+       
         </Wrapper>
+
+
+        
     );
 }
