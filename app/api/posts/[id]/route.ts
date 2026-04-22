@@ -12,6 +12,7 @@ export async function PATCH(
 ) {
     await dbConnect();
     try {
+        const { id } = await params;
         const { userId, tags, caption, images } = await req.json();
 
         // if tags are being updated then validate them
@@ -22,12 +23,12 @@ export async function PATCH(
             );
         }
 
-        const post = await Post.findById(params.id);
+        const post = await Post.findById(id);
         if (!post) {
             return NextResponse.json({ error: 'Post was not found' }, { status: 404 });
         }
 
-        // TODO: i think once auth is implement this probably needs to be changed to session based but lmk
+        // auth is now handled via localstorage userId
         if (post.userId.toString() !== userId) {
             return NextResponse.json({ error: 'You Are Unauthorized' }, { status: 403 });
         }
@@ -54,21 +55,22 @@ export async function DELETE(
 ) {
     await dbConnect();
     try {
+        const { id } = await params;
         const { userId } = await req.json();
 
         //look for the post we are deleting based on its id
-        const post = await Post.findById(params.id);
+        const post = await Post.findById(id);
         if (!post) {
             return NextResponse.json({ error: 'Post not found' }, { status: 404 });
         }
 
-        // TODO: i think once auth is implement this probably needs to be changed to session based but lmk
+        // auth is now handled via localstorage userId
         //if the userId does not match the userId of the post then they are not authorized to delete it
         if (post.userId.toString() !== userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 
-        await Post.findByIdAndDelete(params.id);
+        await Post.findByIdAndDelete(id);
 
         // user personal rankings clean up
         await User.updateOne(
@@ -98,7 +100,9 @@ export async function GET(
 ) {
     await dbConnect();
     try {
-        const post = await Post.findById(params.id)
+        const { id } = await params;
+
+        const post = await Post.findById(id)
             .populate('userId', 'username')
             .populate('destinationId', 'name');
 

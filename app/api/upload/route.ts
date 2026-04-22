@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
 
         // allowed types
         // we agreed on jpeg and png, but I went ahead and added heic because ik many smartphones use heic
-        // I imported a convertor to make this work
+        // cloudinary should handle heic conversion server side
         const allowedTypes = ['image/png', 'image/jpeg', 'image/heic'];
         if (!allowedTypes.includes(file.type)) {
             return NextResponse.json(
@@ -34,11 +34,11 @@ export async function POST(req: NextRequest) {
         }
 
         //cloudinary takes images as base64 strings
-        let base64: string;
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
-        base64 = `data:${file.type};base64,${buffer.toString('base64')}`;
+        const base64 = `data:${file.type};base64,${buffer.toString('base64')}`;
 
+        //upload to cloudinary and let it convert everything to jpg format
         const result = await cloudinary.uploader.upload(base64, {
             folder: 'stamped',
             format: 'jpg',

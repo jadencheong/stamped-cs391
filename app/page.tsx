@@ -3,11 +3,9 @@ import { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import PostCard from '@/components/PostCard';
 import Link from 'next/link';
+import { useUserId } from "@/lib/hooks/useUserId";
 
 /* created by Alen */
-
-// TODO: replace this once we are done with real auth
-const HARDCODED_USER_ID = '000000000000000000000001';
 
 type Post = {
   _id: string;
@@ -83,6 +81,8 @@ const FindPeopleButton = styled(Link)`
 // END OF STYLED COMPONENTS
 
 export default function FeedPage() {
+  const { userId, ready } = useUserId();
+
   const [posts, setPosts] = useState<Post[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -91,11 +91,12 @@ export default function FeedPage() {
   const [isEmpty, setIsEmpty] = useState(false);
 
   const fetchPosts = useCallback(async (pageNum: number) => {
+    if (!userId) return;
     setLoading(true);
     setError('');
     try {
       const res = await fetch(
-          `/api/posts/feed?userId=${HARDCODED_USER_ID}&page=${pageNum}`
+          `/api/posts/feed?userId=${userId}&page=${pageNum}`
       );
       const data = await res.json();
 
@@ -117,12 +118,13 @@ export default function FeedPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [userId]);
 
-  // load first page on mount
+  // only get userId once it is available from local storage
   useEffect(() => {
-    fetchPosts(1);
-  }, [fetchPosts]);
+    if (ready && userId) fetchPosts(1);
+    if (ready && !userId) setIsEmpty(true); //not logged in
+  }, [ready, userId, fetchPosts]);
 
   const loadMore = () => {
     const nextPage = page + 1;
@@ -156,7 +158,7 @@ export default function FeedPage() {
                     <PostCard
                         key={post._id}
                         post={post as any}
-                        currentUserId={HARDCODED_USER_ID}
+                        currentUserId={userId ?? undefined}
                     />
                 ))}
               </FeedList>

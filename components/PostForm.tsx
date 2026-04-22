@@ -13,6 +13,7 @@ type ExistingPost = {
     _id: string;
     tags: Tag[];
     caption: string;
+    images: string[];
 };
 
 type Props = {
@@ -107,6 +108,78 @@ const CharCount = styled.p`
   color: #d1d5db;
   text-align: right;
   margin: 4px 0 0;
+`;
+
+const ImageUploadArea = styled.label`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 120px;
+  border: 0.5px dashed #d1d5db;
+  border-radius: 12px;
+  cursor: pointer;
+  background: #f9fafb;
+  box-sizing: border-box;
+  &:hover { background: #f3f4f6; }
+`;
+
+const ImageUploadText = styled.p`
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+`;
+
+const ImageUploadSubtext = styled.p`
+  font-size: 11px;
+  color: #d1d5db;
+  margin: 4px 0 0;
+`;
+
+const ImagePreviewGrid = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+`;
+
+const ImagePreviewWrapper = styled.div`
+  position: relative;
+  width: 80px;
+  height: 80px;
+`;
+
+const ImagePreview = styled.img`
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 0.5px solid #e5e7eb;
+`;
+
+const RemoveImageButton = styled.button`
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+`;
+
+const UploadingText = styled.p`
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 6px 0 0;
 `;
 
 const ErrorText = styled.p`
@@ -210,6 +283,8 @@ export default function PostForm({
     const [caption, setCaption] = useState(existingPost?.caption ?? '');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [images, setImages] = useState<string[]>(existingPost?.images ?? []);
+    const [uploading, setUploading] = useState(false);
 
     // from Anna -- for Duel stuff
     const [showDuelPrompt, setShowDuelPrompt] = useState(false); // track if duel  prompt visible
@@ -222,6 +297,41 @@ export default function PostForm({
             if (prev.length >= 3)   return prev;
             return [...prev, tag];
         });
+    };
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files ?? []);
+        if (files.length === 0) return;
+
+        // max 4 images total
+        const remaining = 4 - images.length;
+        const toUpload  = files.slice(0, remaining);
+
+        setUploading(true);
+        try {
+            const uploaded = await Promise.all(
+                toUpload.map(async (file) => {
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    const res  = await fetch('/api/upload', { method: 'POST', body: formData });
+                    const data = await res.json();
+
+                    if (!res.ok) throw new Error(data.error ?? 'Upload failed');
+                    return data.url as string;
+                })
+            );
+            setImages(prev => [...prev, ...uploaded]);
+        } catch {
+            setError('One or more images failed to upload. Please try again.');
+        } finally {
+            setUploading(false);
+            // reset input so same file can be re-selected if needed
+            e.target.value = '';
+        }
+    };
+
+    const removeImage = (index: number) => {
+        setImages(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async () => {
@@ -239,7 +349,7 @@ export default function PostForm({
             const res = await fetch(url, {
                 method,
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, destinationId, tags, caption }),
+                body: JSON.stringify({ userId, destinationId, tags, caption, images }),
             });
 
             const data = await res.json();
@@ -280,6 +390,7 @@ export default function PostForm({
 
     return (
         <Wrapper>
+            {/* city should be locked */}
             <Section>
                 <Label>City</Label>
                 <CityName>{destinationName}</CityName>
@@ -288,6 +399,7 @@ export default function PostForm({
                 )}
             </Section>
 
+            {/* Tag selector */}
             <Section>
                 <Label>
                     Tags <TagCount>({tags.length}/3 selected, min 1)</TagCount>
@@ -318,6 +430,7 @@ export default function PostForm({
                 </div>
             </Section>
 
+            {/* Caption */}
             <Section>
                 <Label>Note <TagCount>(optional)</TagCount></Label>
                 <Textarea
@@ -330,11 +443,47 @@ export default function PostForm({
                 <CharCount>{caption.length}/2200</CharCount>
             </Section>
 
-            {/* TODO: image upload ig we need to discuss how this works */}
+            {/* image upload */}
+            <Section>
+                <Label>
+                    Photos <TagCount>(optional, max 4 — jpg, png, heic)</TagCount>
+                </Label>
+
+                {images.length < 4 && (
+                    <>
+                        <ImageUploadArea>
+                            <input
+                                type="file"
+                                accept="image/jpeg,image/png,image/heic"
+                                multiple
+                                onChange={handleImageChange}
+                                style={{ display: 'none' }}
+                            />
+                            <ImageUploadText>Tap to add photos</ImageUploadText>
+                            <ImageUploadSubtext>JPG, PNG or HEIC</ImageUploadSubtext>
+                        </ImageUploadArea>
+                        {uploading && <UploadingText>Uploading...</UploadingText>}
+                    </>
+                )}
+
+                {images.length > 0 && (
+                    <ImagePreviewGrid>
+                        {images.map((url, i) => (
+                            <ImagePreviewWrapper key={url}>
+                                <ImagePreview src={url} alt={`upload ${i + 1}`} />
+                                <RemoveImageButton onClick={() => removeImage(i)}>
+                                    ✕
+                                </RemoveImageButton>
+                            </ImagePreviewWrapper>
+                        ))}
+                    </ImagePreviewGrid>
+                )}
+            </Section>
+
 
             {error && <ErrorText>{error}</ErrorText>}
 
-            <SubmitButton onClick={handleSubmit} disabled={loading}>
+            <SubmitButton onClick={handleSubmit} disabled={loading || uploading}>
                 {loading ? 'Saving...' : isEditing ? 'Save Changes' : 'Post'}
             </SubmitButton>
        
