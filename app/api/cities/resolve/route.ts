@@ -21,8 +21,6 @@ import dbConnect from '@/lib/db';
 // import Mongoose model
 import Destination from '@/lib/models/Destination';
 
-// using POST and not GET — route potentially writes to DB
-
 export async function POST(req: NextRequest) {
     try {
         // parse the city data sent from the frontend
@@ -53,7 +51,7 @@ export async function POST(req: NextRequest) {
         // fetch a cover photo from Unsplash for this city
         // called once on first "stamp"
         // photo url then stored in city document
-        let photoUrl = null;
+        let imageUrl = null;
         const unsplashKey = process.env.UNSPLASH_ACCESS_KEY;
 
         // only fetch if the key exists
@@ -68,12 +66,36 @@ export async function POST(req: NextRequest) {
                 // make request and pass as json object
                 // 2 separate requests — wait for network, wait for body to bew read/parsed
                 const unsplashData = await unsplashRes.json();
-                photoUrl = unsplashData.results?.[0]?.urls?.regular ?? null;
+                imageUrl = unsplashData.results?.[0]?.urls?.regular ?? null;
             } catch (err) {
                 // if Unsplash fails — proceed without a photo instead of failing whole request
                 console.error('[[/api/cities/resolve] Unsplash fetch failed:', err);
             }
         }
+
+        // fetch Wikipedia description
+        // returns short plain-text summary of city
+        // used in Anna's DuelCard tooltip and city detail page
+        let description = null
+
+        try {
+            const wikiRes = await fetch(
+                `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`
+            );
+
+            if (wikiRes.ok) {
+                const wikiData = await wikiRes.json();
+                // extract plain text summary
+                // truncate to 300 chars
+                description = wikiData.extract
+                    ? wikiData.extract.slice(0, 500).replace(/[^.!?]*$/, '').trim()
+                    : null;
+            }
+        } catch (err) {
+            // if Wikipedia fails — proceed without description
+            console.error('[/api/cities/resolve] Wikipedia fetch failed:', err);
+        }
+
 
         // city doesn't exist yet — create it from the Mapbox data including photos
         // globalAverageScore starts at 1000 (standard Elo baseline)
@@ -83,10 +105,11 @@ export async function POST(req: NextRequest) {
             name,
             placeName,
             country: country ?? null,
-            photoUrl,
+            imageUrl,
+            description,
             location: {
                 type: 'Point',
-                coordinates, // [lng, lat] from Mapbox
+                coordinates,
             },
             globalAverageScore: 1000,
             globalTotalScore: 1000,

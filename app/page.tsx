@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import PostCard from '@/components/PostCard';
+import Link from 'next/link';
 
 /* created by Alen */
 
@@ -66,6 +67,20 @@ const ErrorText = styled.p`
   padding: 2rem 0;
 `;
 
+const FindPeopleButton = styled(Link)`
+  display: inline-block;
+  margin-top: 16px;
+  padding: 10px 20px;
+  background: #326273;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 99px;
+  text-decoration: none;
+`;
+
+// END OF STYLED COMPONENTS
+
 export default function FeedPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [page, setPage] = useState(1);
@@ -124,6 +139,9 @@ export default function FeedPage() {
               <EmptySubtitle>
                 Try following some people and see their posts here.
               </EmptySubtitle>
+              <FindPeopleButton href="/search">
+                Find people →
+              </FindPeopleButton>
             </EmptyState>
         ) : (
             <>

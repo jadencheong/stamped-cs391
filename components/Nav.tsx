@@ -18,8 +18,33 @@
 
 'use client';
 
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import styled from 'styled-components';
+import Link from 'next/link';
+
+// STYLED COMPONENTS
+// nav container — full width, sits above all page content via layout.tsx
+const NavBar = styled.nav`
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 14px 0;
+    background: #EEEEEE;
+    border-bottom: 0.5px solid #e5e7eb;
+`;
+
+// individual nav link — bold when active route
+const NavLink = styled(Link)<{ $active: boolean }>`
+    font-size: 14px;
+    font-weight: ${props => props.$active ? '600' : '400'};
+    color: ${props => props.$active ? '#326273' : '#6b7280'};
+    text-decoration: none;
+    transition: color 0.15s ease;
+
+    &:hover {
+        color: #326273;
+    }
+`;
 
 export default function Nav() {
     const pathname = usePathname();
@@ -28,57 +53,13 @@ export default function Nav() {
     if (pathname === '/login' || pathname === '/signup') return null;
 
     return (
-        // nav container styling
-        <nav style={{
-            display: 'flex',
-            justifyContent: 'space-around',
-            alignItems: 'center',
-            padding: '12px 0',
-            borderBottom: '1px solid #eee',
-            background: '#EEEEEE',
-        }}>
-
-            {/* each link styling with path */}
-            <Link href="/" style={{
-                fontWeight: pathname === '/' ? 'bold' : 'normal',
-                textDecoration: 'none',
-                color: 'black',
-            }}>
-                Feed
-            </Link>
-
-            <Link href="/list" style={{
-                fontWeight: pathname === '/list' ? 'bold' : 'normal',
-                textDecoration: 'none',
-                color: 'black',
-            }}>
-                Your List
-            </Link>
-
-            <Link href="/post" style={{
-                fontWeight: pathname === '/post' ? 'bold' : 'normal',
-                textDecoration: 'none',
-                color: 'black',
-            }}>
-                Post
-            </Link>
-
-            <Link href="/leaderboard" style={{
-                fontWeight: pathname === '/leaderboard' ? 'bold' : 'normal',
-                textDecoration: 'none',
-                color: 'black',
-            }}>
-                Leaderboard
-            </Link>
-
-            <Link href="/profile" style={{
-                fontWeight: pathname === '/profile' ? 'bold' : 'normal',
-                textDecoration: 'none',
-                color: 'black',
-            }}>
-                Profile
-            </Link>
-
-        </nav>
+        <NavBar>
+            <NavLink href="/" $active={pathname === '/'}>Feed</NavLink>
+            <NavLink href="/list" $active={pathname === '/list'}>Your List</NavLink>
+            <NavLink href="/post" $active={pathname === '/post'}>Post</NavLink>
+            <NavLink href="/leaderboard" $active={pathname === '/leaderboard'}>Leaderboard</NavLink>
+            <NavLink href="/profile" $active={pathname === '/profile'}>Profile</NavLink>
+        </NavBar>
     );
 }
+
