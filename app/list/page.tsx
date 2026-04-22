@@ -11,7 +11,6 @@
  * data source: user.myRankings from MongoDB, populated with destination details.
  * rank order: sorted by personalElo descending (highest score = rank #1)
  *
- * todo: replace hardcoded userId with real session user once NextAuth is set up.
  *
  * created by: Jaden
  */
@@ -161,6 +160,7 @@ export default function YourListPage() {
     useEffect(() => {
         // read userId from localStorage — set by Ellen's login flow
         const userId = localStorage.getItem('userId');
+
 
         if (!userId) {
             setIsLoading(false);
