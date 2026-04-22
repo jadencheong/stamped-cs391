@@ -5,11 +5,9 @@ import { useParams, useRouter } from 'next/navigation';
 import styled from 'styled-components';
 import PostForm from '@/components/PostForm';
 import { Tag } from '@/lib/tags';
+import { useUserId } from "@/lib/hooks/useUserId";
 
 /* created by Alen */
-
-// TODO: replace with real auth once login is implemented
-const HARDCODED_USER_ID = '000000000000000000000001';
 
 type Post = {
     _id: string;
@@ -62,12 +60,15 @@ const BackButton = styled.button`
 export default function EditPostPage() {
     const { id } = useParams();
     const router = useRouter();
+    const { userId, ready } = useUserId();
 
     const [post, setPost] = useState<Post | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
     useEffect(() => {
+        if (!userId) return;
+
         const fetchPost = async () => {
             try {
                 const res  = await fetch(`/api/posts/${id}`);
@@ -79,7 +80,7 @@ export default function EditPostPage() {
                 }
 
                 // only the owner should be able to access this page
-                if (data.post.userId._id !== HARDCODED_USER_ID) {
+                if (data.post.userId._id !== userId) {
                     setError('You are not authorized to edit this post.');
                     return;
                 }
@@ -93,10 +94,10 @@ export default function EditPostPage() {
         };
 
         fetchPost();
-    }, [id]);
+    }, [id, userId]);
 
     //we return different texts based on the status
-    if (loading) return <Wrapper><StatusText>Loading...</StatusText></Wrapper>;
+    if (!ready || loading) return <Wrapper><StatusText>Loading...</StatusText></Wrapper>;
     if (error) return <Wrapper><ErrorText>{error}</ErrorText></Wrapper>;
     if (!post) return null;
 
@@ -106,13 +107,14 @@ export default function EditPostPage() {
             <Heading>Edit post</Heading>
             <PostForm
                 mode="edit"
-                userId={HARDCODED_USER_ID}
+                userId={userId!}
                 destinationId={post.destinationId._id}
                 destinationName={post.destinationId.name}
                 existingPost={{
                     _id: post._id,
                     tags: post.tags,
                     caption: post.caption,
+                    images: post.images,
                 }}
             />
         </Wrapper>

@@ -11,7 +11,8 @@ const postSchema = new Schema({
     message: 'A post must have between 1 and 3 tags.'
   }
 },
-  caption: { type: String, maxlength: 2200 },
+  caption: { type: String, maxlength: 2200, default: '' },
+  images: [{ type: String }],
   ratingSnapshot: {
     newRank: Number,
   },

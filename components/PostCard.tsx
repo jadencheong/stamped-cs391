@@ -67,6 +67,8 @@ const DeleteButton = styled.button`
   background: none;
   border: none;
   padding: 0;
+  cursor: pointer;
+  &:hover { text-decoration: underline; }
 `;
 
 const ConfirmText = styled.span`
@@ -143,7 +145,7 @@ export default function PostCard({ post, currentUserId }: Props) {
         });
 
         if (res.ok) {
-            router.refresh();
+            window.location.reload(); //replacing router.refresh so you can delete posts and see the effects without refreshing
         }
     };
 
@@ -166,7 +168,7 @@ export default function PostCard({ post, currentUserId }: Props) {
                                <CancelButton onClick={() => setConfirming(false)}>Cancel</CancelButton>
                             </>
                         ) : (
-                            <DeleteButton onClick={handleDelete}>Delete</DeleteButton>
+                            <DeleteButton onClick={() => setConfirming(true)}>Delete</DeleteButton>
                         )}
                     </OwnerActions>
                 )}

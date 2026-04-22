@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import SearchBar from '@/components/SearchBar';
 import PostForm from '@/components/PostForm';
 import Image from 'next/image';
+import {useUserId} from "@/lib/hooks/useUserId";
 
 /* created by Alen */
 /* Jaden addition — added image to cover */
@@ -35,13 +36,13 @@ const Heading = styled.p`
 
 const BackButton = styled.button`
   font-size: 12px;
-  color: #EEEEEE;
+  color: #326273;
   background: none;
   border: none;
   padding: 0;
   margin-bottom: 1.5rem;
   cursor: pointer;
-  &:hover { color: #6b7280; }
+  &:hover { color: #BF7245; }
 `;
 
 // hero image container — same pattern as city detail page
@@ -81,16 +82,14 @@ const CityCountry = styled.p`
 `;
 
 export default function PostPage() {
-    
-
-    const [userId, setUserId] = useState<string | null>(null);
+    //im converting this to my userId hook
+    const { userId, ready } = useUserId();
     const [selectedCity, setSelectedCity] = useState<ResolvedCity | null>(null);
 
-    // use actual userId instead of test user 
-    useEffect(() => {
-        const savedId = localStorage.getItem('userId');
-        setUserId(savedId);
-    }, []);
+    //loading if not ready
+    if (!ready) {
+        return <Wrapper><Heading>Loading user session...</Heading></Wrapper>;
+    }
 
     // city search
     if (!selectedCity) {
@@ -100,10 +99,6 @@ export default function PostPage() {
                 <SearchBar onCitySelect={(city) => setSelectedCity(city as ResolvedCity)} />
             </Wrapper>
         );
-    }
-
-    if (!userId) {
-        return <Wrapper><Heading>Loading user session...</Heading></Wrapper>;
     }
 
     //post form, city has been chosen with the search bar above
@@ -135,7 +130,7 @@ export default function PostPage() {
 
             <PostForm
                 mode="create"
-                userId={userId ?? ''}
+                userId={userId!}
                 destinationId={selectedCity._id}
                 destinationName={selectedCity.name}
             />
