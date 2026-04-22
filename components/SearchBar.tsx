@@ -12,6 +12,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import styled from 'styled-components';
 
 // shape of single city result returned by /api/cities/search
 interface CityResult {
@@ -25,6 +26,74 @@ interface CityResult {
 interface SearchBarProps {
     onCitySelect: (city: CityResult) => void;
 }
+
+// STYLED COMPONENTS
+const Wrapper = styled.div`
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+`;
+
+// text input — white background sits on platinum page background
+const Input = styled.input`
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 15px;
+    font-family: inherit;
+    background: #ffffff;
+    border: 0.5px solid #e5e7eb;
+    border-radius: 12px;
+    outline: none;
+    box-sizing: border-box;
+
+    &:focus {
+        border-color: #5C9EAD;
+    }
+`;
+
+// loading indicator
+const LoadingText = styled.p`
+    font-size: 13px;
+    color: #9ca3af;
+    margin: 6px 0 0;
+`;
+
+// dropdown container — absolute so it floats over page content
+const Dropdown = styled.ul`
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border: 0.5px solid #e5e7eb;
+    border-radius: 12px;
+    list-style: none;
+    margin: 0;
+    padding: 4px 0;
+    z-index: 10;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+`;
+
+// individual result row
+const DropdownItem = styled.li`
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #374151;
+    cursor: pointer;
+
+    &:hover {
+        background: #EEEEEE;
+    }
+`;
+
+// empty state when no results found
+const EmptyText = styled.p`
+    font-size: 13px;
+    color: #9ca3af;
+    margin: 6px 0 0;
+`;
+
 
 export default function SearchBar({ onCitySelect }: SearchBarProps) {
     const [query, setQuery] = useState('');
@@ -95,51 +164,34 @@ export default function SearchBar({ onCitySelect }: SearchBarProps) {
     };
 
     return (
-        <div style={{ position: 'relative', width: '100%', maxWidth: '400px' }}>
+        <Wrapper>
 
-            {/* text input */}
-            <input
+            <Input
                 type="text"
                 value={query}
                 onChange={handleChange}
                 placeholder="Search for a city..."
-                style={{ width: '100%', padding: '8px 12px', fontSize: '16px' }}
             />
 
-            {/* loading indicator */}
-            {isLoading && <p>Searching...</p>}
+            {isLoading && <LoadingText>Searching...</LoadingText>}
 
-            {/* results dropdown */}
             {isOpen && results.length > 0 && (
-                <ul style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: 0,
-                    right: 0,
-                    background: 'white',
-                    border: '1px solid gray',
-                    listStyle: 'none',
-                    margin: 0,
-                    padding: 0,
-                    zIndex: 10,
-                }}>
+                <Dropdown>
                     {results.map(city => (
-                        <li
+                        <DropdownItem
                             key={city.mapboxId}
                             onClick={() => handleSelect(city)}
-                            style={{ padding: '8px 12px', cursor: 'pointer' }}
                         >
                             {city.placeName}
-                        </li>
+                        </DropdownItem>
                     ))}
-                </ul>
+                </Dropdown>
             )}
 
-            {/* empty state */}
-            {isOpen && results.length === 0 && !isLoading &&(
-                <p>No results found</p>
+            {isOpen && results.length === 0 && !isLoading && (
+                <EmptyText>No results found</EmptyText>
             )}
 
-        </div>
+        </Wrapper>
     );
 }

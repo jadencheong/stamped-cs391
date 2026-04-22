@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
             .skip((page - 1) * limit)
             .limit(limit)
             .populate('userId', 'username')
-            .populate('destinationId', 'name placeName country photoUrl');
+            .populate('destinationId', 'name placeName country imageUrl');
 
         return NextResponse.json({ posts, page, hasMore: posts.length === limit });
 
