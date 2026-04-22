@@ -100,16 +100,6 @@ const AppName = styled.h1`
     text-transform: uppercase;
 `;
 
-const Tagline = styled.p`
-    font-family: 'Helvetica', sans-serif;
-    font-size: 0.75rem;
-    color: #5C9EAD;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-top: 0.75rem;
-    font-weight: 500;
-`;
-
 const FormTitle = styled.h2`
     font-family: 'Helvetica', sans-serif;
     font-size: 1.1rem;
@@ -273,7 +263,6 @@ export default function LoginPage() {
                     <StampBorder>
                         <AppName>Stamped</AppName>
                     </StampBorder>
-                    <Tagline>rank the world</Tagline>
                 </LogoBlock>
 
                 <FormTitle>Welcome back</FormTitle>
