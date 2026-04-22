@@ -32,7 +32,7 @@ const Wrapper = styled.div`
 
 const Label = styled.p`
   font-size: 11px;
-  color: #9ca3af;
+  color: #326273;
   margin: 0 0 6px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -42,7 +42,7 @@ const CityName = styled.p`
   font-family: 'Unbounded', sans-serif;
   font-size: 18px;
   font-weight: 600;
-  color: #111827;
+  color: #BF7245;
   margin: 0 0 4px;
 `;
 
@@ -58,7 +58,7 @@ const Section = styled.div`
 
 const CategoryLabel = styled.p`
   font-size: 11px;
-  color: #9ca3af;
+  color: #BF7245;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0 0 8px;
@@ -86,7 +86,7 @@ const TagCount = styled.span`
 const Textarea = styled.textarea`
   width: 100%;
   font-size: 13px;
-  color: #374151;
+  color: #BF7245;
   border: 0.5px solid #e5e7eb;
   border-radius: 12px;
   padding: 12px 16px;
@@ -111,7 +111,7 @@ const ErrorText = styled.p`
 
 const SubmitButton = styled.button`
   width: 100%;
-  background: #2563eb;
+  background: #326273;
   color: #ffffff;
   font-size: 14px;
   font-weight: 500;
@@ -200,9 +200,9 @@ export default function PostForm({
     const router = useRouter();
     const isEditing = mode === 'edit';
 
-    const [tags, setTags]       = useState<Tag[]>(existingPost?.tags ?? []);
+    const [tags, setTags] = useState<Tag[]>(existingPost?.tags ?? []);
     const [caption, setCaption] = useState(existingPost?.caption ?? '');
-    const [error, setError]     = useState('');
+    const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
     // from Anna -- for Duel stuff
@@ -225,8 +225,8 @@ export default function PostForm({
         setError('');
         setLoading(true);
 
-        const url    = isEditing ? `/api/posts/${existingPost!._id}` : '/api/posts';
-        const method = isEditing ? 'PATCH' : 'POST';
+        const url= isEditing ? `/api/posts/${existingPost!._id}` : '/api/posts';
+        const method= isEditing ? 'PATCH' : 'POST';
 
         try {
             const res = await fetch(url, {

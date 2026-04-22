@@ -10,8 +10,8 @@ export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
         const userId = searchParams.get('userId');
-        const page   = parseInt(searchParams.get('page') ?? '1');
-        const limit  = 20;
+        const page = parseInt(searchParams.get('page') ?? '1');
+        const limit = 20;
 
         if (!userId) {
             return NextResponse.json({ error: 'userId is required' }, { status: 400 });
@@ -22,6 +22,8 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
 
+        //return either an empty array if you are not following anyone or
+        //return an array of the ids of people you are following
         const followingIds = user.following ?? [];
 
         // if you are not following anyone, then your feed should be empty

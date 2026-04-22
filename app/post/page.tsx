@@ -35,11 +35,13 @@ const Heading = styled.p`
 
 const BackButton = styled.button`
   font-size: 12px;
-  color: #9ca3af;
+  color: #EEEEEE;
   background: none;
   border: none;
   padding: 0;
   margin-bottom: 1.5rem;
+  cursor: pointer;
+  &:hover { color: #6b7280; }
 `;
 
 export default function PostPage() {
