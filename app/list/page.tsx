@@ -16,16 +16,11 @@
  * created by: Jaden
  */
 
-import dbConnect from '@/lib/db';
-import User from '@/lib/models/User';
-import Destination from '@/lib/models/Destination';
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 import styled from 'styled-components';
-
-// todo: replace with real session userId once NextAuth is integrated (Ellen's auth)
-// for now using a hardcoded placeholder so the page can be built and tested
-const TEMP_USER_ID = '000000000000000000000001';
+import { useState, useEffect } from "react";
 
 // STYLED COMPONENTS
 
@@ -142,65 +137,84 @@ const EloScore = styled.span`
 
 // END OF STYLED COMPONENTS
 
+// defines shape of each ranking entry coming back from API
+interface Ranking {
+    _id: string;
+    destinationId: {
+        _id: string;
+        name: string;
+        imageUrl?: string;
+        tags?: { label: string; count: number }[];
+    } | null;
+    personalElo: number;
+}
+
 // fetches data directly from MongoDB without API route
 // server component — can directly connect to db, so no need for API route (which is for
 // when browser needs to fetch data after page loads
-export default async function YourListPage() {
+export default function YourListPage() {
+    // two state pieces — ranking data and loading state
+    const [rankings, setRankings] = useState<Ranking[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // initialize an empty array so accessible in JSX regardless of successful or failed query
-    let rankings: {
-        _id?: string;
-        destinationId: {
-            name: string;
-            tags: { label: string; count: number }[];
-            imageUrl?: string;
-        } | null;
-        personalElo: number;
-    }[] = [];
+    // on page load — check if user is logged in, then fetch rankings
+    useEffect(() => {
+        // read userId from localStorage — set by Ellen's login flow
+        const userId = localStorage.getItem('userId');
 
-    try {
-        await dbConnect();
-
-        // fetch the user's rankings, populating each destinationId with city's name and tags from the
-        // Destination collection.
-        // same as Ellen's route
-        // .populate() --> tells Mongoose to fetch Destination document for each
-        // ObjectIds that are stored in myRankings array and put it in my place of the ID
-        const user = await User.findById(TEMP_USER_ID).populate({
-            path: 'myRankings.destinationId',
-            model: Destination,
-            select: 'name tags imageUrl',
-        });
-
-        if (user && user.myRankings.length > 0) {
-            // sort by personalElo descending from highest score = rank 1
-            // [...user.myRankings] --> spread operator; creates a new array before sorting
-            // .sort((a, b) => b.personalElo - a.personalElo); --> JS sort comparator
-            // when result is pos — b comes first
-            // when result is neg — a comes first
-            rankings = [...user.myRankings].sort(
-                (a: { personalElo: number }, b: { personalElo: number }) => b.personalElo - a.personalElo
-            );
+        if (!userId) {
+            setIsLoading(false);
+            return;
         }
-    } catch (err) {
-        console.error('[/list] Failed to fetch rankings:', err);
-    }
+
+        const fetchRankings = async () => {
+            try {
+                // use Ellen's /api/users/[id] route which returns myRankings populated
+                const res = await fetch(`/api/users/${userId}`);
+                const data = await res.json();
+
+                if (!data.myRankings) {
+                    setIsLoading(false);
+                    return;
+                }
+
+                // sort by personalElo descending — highest score = rank #1
+                const sorted = [...data.myRankings].sort(
+                    (a: Ranking, b: Ranking) => b.personalElo - a.personalElo
+                );
+                setRankings(sorted);
+            } catch (err) {
+                console.error('[/list] Failed to fetch rankings:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchRankings();
+    }, []);
 
     return (
         <PageWrapper>
             <PageTitle>Your List</PageTitle>
             <PageSubtitle>Your personal city rankings, ordered by your duels.</PageSubtitle>
 
-            {rankings.length === 0 && (
-                <EmptyState>You haven&apos;t stamped any cities yet — start by searching for a city.</EmptyState>
+            {/* three possible states
+                1. loading
+                2. empty
+                3. has data
+            */}
+            {isLoading && <EmptyState>Loading...</EmptyState>}
+
+            {!isLoading && rankings.length === 0 && (
+                <EmptyState>You haven&apos;t stamped any cities yet.</EmptyState>
             )}
 
-            {rankings.length > 0 && (
+            {!isLoading && rankings.length > 0 && (
                 <RankingList>
                     {rankings.map((entry, index) => {
                         const city = entry.destinationId;
                         return (
-                            <RankingRow key={entry._id?.toString()}>
+                            <RankingRow key={entry._id}>
 
                                 {/* rank number */}
                                 <RankNumber>#{index + 1}</RankNumber>
@@ -209,7 +223,7 @@ export default async function YourListPage() {
                                 {city?.imageUrl && (
                                     <CityThumb
                                         src={city.imageUrl}
-                                        alt={city.name}
+                                        alt={city.name ?? 'city'}
                                         width={60}
                                         height={60}
                                     />
@@ -221,7 +235,7 @@ export default async function YourListPage() {
                                         {city?.name ?? 'Unknown city'}
                                     </CityName>
                                     <TagRow>
-                                        {city?.tags?.slice(0, 3).map((tag: { label: string }) => (
+                                        {city?.tags?.slice(0, 3).map((tag) => (
                                             <TagPill key={tag.label}>{tag.label}</TagPill>
                                         ))}
                                     </TagRow>

@@ -11,7 +11,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
         const user = await User.findById(id)
             .populate('following', 'username')
-            .populate('followers', 'username');
+            .populate('followers', 'username')
+            .populate('myRankings.destinationId', 'name imageUrl tags');
 
         if (!user) {
             return NextResponse.json({ message: 'User not found.' }, { status: 404 }); // 404: Not found
