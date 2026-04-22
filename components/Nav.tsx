@@ -31,6 +31,10 @@ const NavBar = styled.nav`
     padding: 14px 0;
     background: #EEEEEE;
     border-bottom: 0.5px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    // make sure nav sits visually on top of other page content
+    z-index: 100;
 `;
 
 // individual nav link — bold when active route

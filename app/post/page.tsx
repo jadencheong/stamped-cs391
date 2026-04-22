@@ -1,6 +1,6 @@
 // app/post/page.tsx
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import SearchBar from '@/components/SearchBar';
 import PostForm from '@/components/PostForm';
@@ -8,9 +8,6 @@ import Image from 'next/image';
 
 /* created by Alen */
 /* Jaden addition — added image to cover */
-
-// TODO: replace with real auth once login is implemented
-const HARDCODED_USER_ID = '000000000000000000000001';
 
 type ResolvedCity = {
     _id: string;
@@ -84,6 +81,9 @@ const CityCountry = styled.p`
 `;
 
 export default function PostPage() {
+    const [userId] = useState<string | null>(() =>
+        typeof window !== 'undefined' ? localStorage.getItem('userId') : null
+    );
     const [selectedCity, setSelectedCity] = useState<ResolvedCity | null>(null);
 
     // city search
@@ -125,7 +125,7 @@ export default function PostPage() {
 
             <PostForm
                 mode="create"
-                userId={HARDCODED_USER_ID}
+                userId={userId ?? ''}
                 destinationId={selectedCity._id}
                 destinationName={selectedCity.name}
             />

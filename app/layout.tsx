@@ -2,7 +2,7 @@
  * app/layout.tsx
  *
  * Jaden changes:
- * - global font setup (Unbounded for headings, Roboto Condensed for body)
+ * - global font setup (Unbounded for headings, Helvetica for body)
  * - global metadata (browser tab title, description)
  * - nav component rendered above all page content at top of page
  *
@@ -42,10 +42,7 @@ export default function RootLayout({
             data-theme="light"
             className={`${unbounded.variable} h-full antialiased`}
         >
-        <body
-            className="min-h full flex flex-col"
-            style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
-        >
+        <body className="min-h full flex flex-col">
         <StyledComponentsRegistry>
             <Nav />
             { children }

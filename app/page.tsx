@@ -68,8 +68,9 @@ const ErrorText = styled.p`
 `;
 
 const FindPeopleButton = styled(Link)`
-  display: inline-block;
-  margin-top: 16px;
+  display: block;
+  width: fit-content;
+  margin: 0 auto 1.5rem;
   padding: 10px 20px;
   background: #326273;
   color: #ffffff;
@@ -131,6 +132,14 @@ export default function FeedPage() {
 
   return (
       <Page>
+        {/* find people button should always be visible
+            sits on top of the feed so that users can always search
+            for other users
+        */}
+        <FindPeopleButton href="/search">
+          Find people →
+        </FindPeopleButton>
+
         {error && <ErrorText>{error}</ErrorText>}
 
         {isEmpty ? (
@@ -139,9 +148,6 @@ export default function FeedPage() {
               <EmptySubtitle>
                 Try following some people and see their posts here.
               </EmptySubtitle>
-              <FindPeopleButton href="/search">
-                Find people →
-              </FindPeopleButton>
             </EmptyState>
         ) : (
             <>

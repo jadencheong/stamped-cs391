@@ -74,7 +74,13 @@ const TagButton = styled.button<{ $selected: boolean; $disabled: boolean }>`
   font-size: 12px;
   padding: 4px 12px;
   border-radius: 99px;
-  border: 0.5px solid;
+  font-family: inherit;
+  cursor: ${props => props.$disabled ? 'not-allowed' : 'pointer'};
+  opacity: ${props => props.$disabled ? 0.4 : 1};
+  border: ${props => props.$selected ? '1.5px solid #326273' : '0.5px solid #e5e7eb'};
+  background: ${props => props.$selected ? '#326273' : '#ffffff'};
+  color: ${props => props.$selected ? '#ffffff' : '#374151'};
+  transition: all 0.15s ease;
 `;
 
 const TagCount = styled.span`
