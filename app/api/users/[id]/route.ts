@@ -22,14 +22,14 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     }
 }
 
-// Edit username/email of profile
+// Edit username of profile
 // PUT
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
     try {
         await dbConnect();
         const body = await req.json();
 
-        const allowedUpdates = ['username', 'email'];
+        const allowedUpdates = ['username'];
         const updates = Object.fromEntries(
             Object.entries(body).filter(([key]) => allowedUpdates.includes(key))
         );
@@ -42,17 +42,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
             });
             if (existingUsername) {
                 return NextResponse.json({ message: 'Username already in use.' }, { status: 409 });
-            }
-        }
-
-        // Update email (do we want this feature??)
-        if (updates.email) {
-            const existingEmail = await User.findOne({
-                email: updates.email,
-                _id: { $ne: params.id },
-            });
-            if (existingEmail) {
-                return NextResponse.json({ message: 'Email already in use.' }, { status: 409 });
             }
         }
 
