@@ -62,6 +62,7 @@ const ImageWrapper = styled.div`
     border-radius: 2vh;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     background: #EEEEEE;
+    display: block;
 `;
 
 // decides how the image resizes 
@@ -168,7 +169,7 @@ export const DuelCard = ({ city, onSelect, buttonColor }: any) => (
             </ImageWrapper>
 
             <TitleRow>
-                <CityTitle>{city.name}</CityTitle>
+                <CityTitle>{city.name}, {city.country}</CityTitle>
                 <InfoButton>
                     <Info size={20} />
                     <Tooltip>{city.description}</Tooltip>

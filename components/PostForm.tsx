@@ -214,6 +214,7 @@ export default function PostForm({
     // from Anna -- for Duel stuff
     const [showDuelPrompt, setShowDuelPrompt] = useState(false); // track if duel  prompt visible
     const [pendingCity, setPendingCity] = useState<{ id: string, name: string } | null>(null); // store city data for duel
+    const [showFirstPostModal, setShowFirstPostModal] = useState(false); // see if first post (or only post)
 
     const toggleTag = (tag: Tag) => {
         setTags(prev => {
@@ -256,8 +257,14 @@ export default function PostForm({
 
             // from Anna --  don't prompt duel on edits, only on new post creations
             if (!isEditing){
-                setPendingCity({ id: destinationId, name: destinationName });
-                setShowDuelPrompt(true);
+
+                if (data.totalPosts > 1) {
+                    setPendingCity({ id: destinationId, name: destinationName });
+                    setShowDuelPrompt(true);
+                } else {
+                    // trigger the "First Post" success modal instead of immediate redirect
+                    setShowFirstPostModal(true);
+                }
             } else {
                 router.push('/');
             }
@@ -364,6 +371,34 @@ export default function PostForm({
                 </PromptBox>
             </PromptOverlay>
             )}
+
+        {/* show if it's the first or only post */}
+        {showFirstPostModal && (
+            <PromptOverlay>
+                <PromptBox>
+                    <TitleHeader>Post Created!</TitleHeader>
+                    
+                    <PromptText>
+                        Your discovery of <strong>{destinationName}</strong> has been saved. 
+                        <br /><br />
+                        To start <strong>Dueling</strong> and ranking your travels, share at least one more city!
+                    </PromptText>
+
+                    <ButtonGroup>
+                        <ActionButton onClick={() => router.push('/')}>
+                            Go to Feed
+                        </ActionButton>
+                        
+                        <ActionButton 
+                            $variant="secondary" 
+                            onClick={() => router.push('/search')}
+                        >
+                            Find Another City
+                        </ActionButton>
+                    </ButtonGroup>
+                </PromptBox>
+            </PromptOverlay>
+        )}
                 
        
         </Wrapper>

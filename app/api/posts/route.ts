@@ -42,18 +42,26 @@ export async function POST(req: Request) {
 
         // add destination to user's personal rankings so that the duel system can find it
         // should only insert if not already there
-        await User.updateOne(
+        await User.findOneAndUpdate(
             { _id: userId, 'myRankings.destinationId': { $ne: destinationId } },
-            { $push: { myRankings: { destinationId, personalElo: 1000 } } }
+            { $push: { myRankings: { destinationId, personalElo: 1000 } } },
+            { new: true }
         );
 
-        return NextResponse.json({ success: true, post }, { status: 201 });
+        // NEW LOGIC: Count how many POSTS this user actually has in the database
+        const actualPostCount = await Post.countDocuments({ userId });
 
-    } catch (error) {
-        console.error('Create post error:', error);
-        return NextResponse.json({ error: 'Failed to create post' }, { status: 500 });
+        return NextResponse.json({ 
+            success: true, 
+            post, 
+            totalPosts: actualPostCount // Send the REAL post count
+        }, { status: 201 });
+
+        } catch (error) {
+            console.error('Create post error:', error);
+            return NextResponse.json({ error: 'Failed to create post' }, { status: 500 });
+        }
     }
-}
 
 /* GET ALL POSTS */
 export async function GET(req: NextRequest) {

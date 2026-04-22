@@ -166,6 +166,8 @@ export default async function YourListPage() {
         // same as Ellen's route
         // .populate() --> tells Mongoose to fetch Destination document for each
         // ObjectIds that are stored in myRankings array and put it in my place of the ID
+        
+
         const user = await User.findById(TEMP_USER_ID).populate({
             path: 'myRankings.destinationId',
             model: Destination,
