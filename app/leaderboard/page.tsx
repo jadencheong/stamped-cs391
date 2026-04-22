@@ -175,7 +175,7 @@ export default async function LeaderboardPage() {
         cities = allDestinations.map((city: any) => {
             // data normalization to prevent divide by 0 errors
             const id = city._id.toString();
-            const userCount = countMap[id] || 0;
+            const userCount = Math.max(countMap[id] || 0, 1);
 
             const duels = city.timesDuelled || 0;
             const totalPoints = city.globalTotalScore || 0;
