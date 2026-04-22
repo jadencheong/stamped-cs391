@@ -6,15 +6,15 @@
  * - global metadata (browser tab title, description)
  * - nav component rendered above all page content at top of page
  *
+ * Ellen changes:
+ * - added StyledComponentsRegistry to fix SSR hydration mismatch with styled-components
  */
 
 import type { Metadata } from "next";
 import { Unbounded, Roboto_Condensed } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
-
-// from Anna
-import DuelIcon from "./components/duel/DuelIcon";
+import StyledComponentsRegistry from "@/lib/registry";
 
 // heading fonts as custom CSS property
 // can be referenced anywhere as "--font-unbounded"
@@ -52,10 +52,10 @@ export default function RootLayout({
             className="min-h full flex flex-col"
             style={{ fontFamily: 'var(--font-roboto-condensed), sans-serif' }}
         >
+        <StyledComponentsRegistry>
             <Nav />
             { children }
-            {/* show the duel icon always */}
-            <DuelIcon />
+        </StyledComponentsRegistry>
         </body>
         </html>
     );
