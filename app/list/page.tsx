@@ -20,11 +20,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import styled from 'styled-components';
 import { useState, useEffect } from "react";
+import { useUserId } from "@/lib/hooks/useUserId";
 
 // STYLED COMPONENTS
 
 const PageWrapper = styled.div`
-    max-width: 480px;
+    max-width: 680px;
     margin: 0 auto;
     padding: 2rem 1.25rem;
     background: #EEEEEE;
@@ -152,15 +153,15 @@ interface Ranking {
 // server component — can directly connect to db, so no need for API route (which is for
 // when browser needs to fetch data after page loads
 export default function YourListPage() {
-    // two state pieces — ranking data and loading state
+    // 2 state pieces — ranking data and loading state
+    // also use userId
+    const { userId, ready } = useUserId();
     const [rankings, setRankings] = useState<Ranking[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     // on page load — check if user is logged in, then fetch rankings
     useEffect(() => {
-        // read userId from localStorage — set by Ellen's login flow
-        const userId = localStorage.getItem('userId');
-
+        if (!ready) return;
 
         if (!userId) {
             setIsLoading(false);
@@ -191,7 +192,7 @@ export default function YourListPage() {
         };
 
         fetchRankings();
-    }, []);
+    }, [userId, ready]);
 
     return (
         <PageWrapper>

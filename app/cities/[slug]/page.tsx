@@ -18,6 +18,7 @@ import Destination from '@/lib/models/Destination';
 import Post from '@/lib/models/Post';
 import Image from 'next/image';
 import styled from 'styled-components';
+import User from '@/lib/models/User';
 
 // tell TS what shape data is coming back from MongoDB will be
 interface CityPageProps {
@@ -46,7 +47,7 @@ interface PostDocument {
 
 // container for entire page
 const PageWrapper = styled.div`
-  max-width: 480px;
+  max-width: 680px;
   margin: 0 auto;
   padding: 0 0 4rem;
     background: #EEEEEE;
@@ -221,6 +222,7 @@ export default async function CityPage({ params }: CityPageProps) {
     let city: CityDocument | null = null;
     let posts: PostDocument[] = [];
     let globalRank = 0;
+    let weightedScore = 0;
 
     try {
         await dbConnect();
@@ -233,10 +235,36 @@ export default async function CityPage({ params }: CityPageProps) {
 
         if (city) {
             // figure out what rank this city is globally
-            const higherCount = await Destination.countDocuments({
-                globalAverageScore: { $gt: city.globalAverageScore }
+            // calculate global rank using same weighted formula as leaderboard
+            // fetch all cities and users to replicate the leaderboard scoring
+            const allDestinations = await Destination.find().lean();
+            const users = await User.find({}, 'myRankings.destinationId').lean();
+
+            // count how many users have ranked each city
+            const countMap: Record<string, number> = {};
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            users.forEach((user: any) => {
+                user.myRankings.forEach((ranking: any) => {
+                    const id = ranking.destinationId.toString();
+                    countMap[id] = (countMap[id] || 0) + 1;
+                });
             });
-            globalRank = higherCount + 1;
+
+            // compute weighted score for each city — same formula as leaderboard
+            const scoredCities = allDestinations.map((c: any) => {
+                const id = c._id.toString();
+                const userCount = Math.max(countMap[id] || 0, 1);
+                const duels = c.timesDuelled || 0;
+                const totalPoints = c.globalTotalScore || 0;
+                const averageScore = duels > 0 ? Math.round(totalPoints / userCount) : 1000;
+                return { id, averageScore };
+            }).sort((a, b) => b.averageScore - a.averageScore);
+
+            // find this city's position in the sorted list
+            const cityId = city._id.toString();
+            globalRank = scoredCities.findIndex(c => c.id === cityId) + 1;
+            // get the weighted score for this specific city
+            weightedScore = scoredCities.find(c => c.id === cityId)?.averageScore ?? city.globalAverageScore;
 
             // get all posts for this city, newest first
             // include author username
@@ -297,7 +325,7 @@ export default async function CityPage({ params }: CityPageProps) {
             <ContentSection>
                 <SectionLabel>Global ranking</SectionLabel>
                 <RankBadge>
-                    #{globalRank} · {city.globalAverageScore} pts
+                    #{globalRank} · {weightedScore} pts
                 </RankBadge>
                 <DuelNote>
                     Based on {city.timesDuelled} {city.timesDuelled === 1 ? 'duel' : 'duels'} across all users
