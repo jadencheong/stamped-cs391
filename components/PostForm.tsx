@@ -32,7 +32,7 @@ const Wrapper = styled.div`
 `;
 
 const Label = styled.p`
-  font-size: 11px;
+  font-size: 12px;
   color: #326273;
   margin: 0 0 6px;
   text-transform: uppercase;
@@ -48,8 +48,8 @@ const CityName = styled.p`
 `;
 
 const LockedNote = styled.p`
-  font-size: 11px;
-  color: #d1d5db;
+  font-size: 12px;
+  color: #222021;
   margin: 0;
 `;
 
@@ -78,15 +78,15 @@ const TagButton = styled.button<{ $selected: boolean; $disabled: boolean }>`
   font-family: inherit;
   cursor: ${props => props.$disabled ? 'not-allowed' : 'pointer'};
   opacity: ${props => props.$disabled ? 0.4 : 1};
-  border: ${props => props.$selected ? '1.5px solid #326273' : '0.5px solid #e5e7eb'};
+  border: ${props => props.$selected ? '2px solid #BF7245' : '1.0px solid black'};
   background: ${props => props.$selected ? '#326273' : '#ffffff'};
   color: ${props => props.$selected ? '#ffffff' : '#374151'};
   transition: all 0.15s ease;
 `;
 
 const TagCount = styled.span`
-  color: #d1d5db;
-  font-size: 11px;
+  color: #222021;
+  font-size: 12px;
   margin-left: 4px;
 `;
 
@@ -94,8 +94,9 @@ const Textarea = styled.textarea`
   width: 100%;
   font-size: 13px;
   color: #BF7245;
-  border: 0.5px solid #e5e7eb;
+  border: 0.5px solid black;
   border-radius: 12px;
+  background: #f9fafb;
   padding: 12px 16px;
   resize: none;
   outline: none;
@@ -104,8 +105,8 @@ const Textarea = styled.textarea`
 `;
 
 const CharCount = styled.p`
-  font-size: 11px;
-  color: #d1d5db;
+  font-size: 12px;
+  color: #222021;
   text-align: right;
   margin: 4px 0 0;
 `;
@@ -117,7 +118,7 @@ const ImageUploadArea = styled.label`
   justify-content: center;
   width: 100%;
   height: 120px;
-  border: 0.5px dashed #d1d5db;
+  border: 1px outset black;
   border-radius: 12px;
   cursor: pointer;
   background: #f9fafb;
@@ -127,13 +128,13 @@ const ImageUploadArea = styled.label`
 
 const ImageUploadText = styled.p`
   font-size: 12px;
-  color: #9ca3af;
+  color: #222021;
   margin: 0;
 `;
 
 const ImageUploadSubtext = styled.p`
   font-size: 11px;
-  color: #d1d5db;
+  color: #9ca3af;
   margin: 4px 0 0;
 `;
 
@@ -177,7 +178,7 @@ const RemoveImageButton = styled.button`
 `;
 
 const UploadingText = styled.p`
-  font-size: 11px;
+  font-size: 12px;
   color: #9ca3af;
   margin: 6px 0 0;
 `;

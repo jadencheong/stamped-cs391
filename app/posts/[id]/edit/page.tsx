@@ -19,7 +19,7 @@ type Post = {
 };
 
 const Wrapper = styled.div`
-  max-width: 480px;
+  max-width: 80vw;
   margin: 0 auto;
   padding: 1.5rem 1rem;
 `;
@@ -48,13 +48,13 @@ const ErrorText = styled.p`
 
 const BackButton = styled.button`
   font-size: 12px;
-  color: #9ca3af;
+  color: #326273;
   background: none;
   border: none;
   padding: 0;
   margin-bottom: 1.5rem;
   cursor: pointer;
-  &:hover { color: #6b7280; }
+  &:hover { color: #BF7245; }
 `;
 
 export default function EditPostPage() {
