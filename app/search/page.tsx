@@ -75,6 +75,9 @@ const UserCard = styled(Link)`
     border-radius: 16px;
     margin-bottom: 10px;
     text-decoration: none;
+    width: 100%;
+    min-height: 64px;
+    box-sizing: border-box;
 `;
 
 const Username = styled.p`
