@@ -17,7 +17,7 @@ type Post = {
 };
 
 const Page = styled.div`
-  max-width: 480px;
+  max-width: 55vw;
   margin: 0 auto;
   padding: 1.5rem 1rem;
 `;
