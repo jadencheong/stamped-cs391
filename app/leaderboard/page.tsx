@@ -233,14 +233,6 @@ export default async function LeaderboardPage() {
                                 <CityName href={`/cities/${city.name.toLowerCase().replace(/\s+/g, '-')}`}>
                                     {city.name}{city.country ? `, ${city.country}` : ''}
                                 </CityName>
-                                <TagRow>
-                                    {(city.tags ?? [])
-                                        .sort((a, b) => b.count - a.count)
-                                        .slice(0, 3)
-                                        .map(tag => (
-                                            <TagPill key={tag.label}>{tag.label}</TagPill>
-                                        ))}
-                                </TagRow>
                             </CityInfo>
 
                             {/* global score + duel count */}
