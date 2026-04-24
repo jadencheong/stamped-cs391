@@ -235,11 +235,6 @@ export default function YourListPage() {
                                     <CityName href={`/cities/${city?.name?.toLowerCase().replace(/\s+/g, '-')}`}>
                                         {city?.name ?? 'Unknown city'}
                                     </CityName>
-                                    <TagRow>
-                                        {city?.tags?.slice(0, 3).map((tag) => (
-                                            <TagPill key={tag.label}>{tag.label}</TagPill>
-                                        ))}
-                                    </TagRow>
                                 </CityInfo>
 
                                 {/* personal elo score */}
