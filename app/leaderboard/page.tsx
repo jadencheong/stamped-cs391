@@ -37,7 +37,7 @@ interface DestinationEntry {
 
 // STYLED COMPONENTS
 const PageWrapper = styled.div`
-    max-width: 480px;
+    max-width: 680px;
     margin: 0 auto;
     padding: 2rem 1.25rem;
     background: #EEEEEE;

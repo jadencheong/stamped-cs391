@@ -2,6 +2,8 @@ import {NextRequest, NextResponse} from 'next/server';
 import dbConnect from '@/lib/db';
 import Post from '@/lib/models/Post';
 import User from '@/lib/models/User';
+// jaden — for updating tags on Destination details page
+import Destination from '@/lib/models/Destination';
 
 /* crated by: Alen */
 /* CREATE POST */
@@ -39,6 +41,26 @@ export async function POST(req: Request) {
         }
 
         const post = await Post.create({ userId, destinationId, tags, caption, images });
+
+        // Jaden's part
+        // increment tag counts on Destination document
+        // for each tag on the post, find matching tag in city.tags array and incrementing count
+        // if tag doesn't exist yet — add it with count 1
+        for (const tag of tags) {
+            // try to increment existing tag
+            const updated = await Destination.findOneAndUpdate(
+                { _id: destinationId, 'tags.label': tag },
+                { $inc: { 'tags.$.count': 1 } }
+            );
+
+            // if tag didn't exist on this city yet, add it
+            if (!updated) {
+                await Destination.findByIdAndUpdate(destinationId, {
+                    $push: { tags: { label: tag, count: 1 } }
+                });
+            }
+        }
+        // end of jaden's part
 
         // add destination to user's personal rankings so that the duel system can find it
         // should only insert if not already there
