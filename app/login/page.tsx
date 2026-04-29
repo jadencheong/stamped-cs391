@@ -213,9 +213,11 @@ const FooterLink = styled.a`
     }
 `;
 
+// end of styling
+
 export default function LoginPage() {
     const router = useRouter();
-    const [identifier, setIdentifier] = useState(''); // email or username
+    const [identifier, setIdentifier] = useState(''); // email OR username
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
