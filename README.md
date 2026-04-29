@@ -142,11 +142,13 @@ Searches users by username using MongoDB with case-insensitive flag. Accepts ?q=
 Dynamic server component — derives name from URL slug, queries MongoDB by case-insensitive name match. Calculates global rank using weight formulas as is used in the Leaderboard. Shows cover photo, global ranking, Wikipedia description, most common tags, and post feed.
 
 **/api/posts — POST, GET**
+
 POST: Creates a new post. Requires userId, destinationId, and 1–3 tags.
 
 GET: Returns all posts, can be filtered by userId via query param.
 
 **/api/posts/[id] — GET, PATCH, DELETE**
+
 GET: Fetches a single post by ID with populated userId and destinationId.
 
 PATCH: Edits a post's tags, caption, or images.
@@ -154,9 +156,11 @@ PATCH: Edits a post's tags, caption, or images.
 DELETE: Deletes a post and cleans up related data
 
 **/api/posts/feed — GET**
+
 Returns a paginated feed of posts from users the current user follows,
 sorted most recent first.
 
 **/api/upload — POST**
+
 Handles image uploads for posts. Returns the Cloudinary hosted URL to be
 stored in the post's images array in MongoDB.
