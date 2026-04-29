@@ -14,6 +14,18 @@ I (Anna) have actually used Mongoose in multiple different projects before. I le
 
 I've since used it in multiple outside projects, and figured it would be a perfect fit for a project where we have models like Users, Duels, and Destinations where validation and integrity matters. It’s a perfect fit for an app like Stamped, where data consistency (like ELO scores and ranking snapshots) is paramount.
 
+### bcrypt
+
+bcrypt is a third-party Node.js library used for hashing passwords before storing them in a database. Storing passwords as hashed instead of plain text provides extra security--if the database were compromised, the original passwords cannot be recovered.
+
+bcrypt converts the plain-text passwords into a fixed-length and unreadable string. The password is also "salted," meaning random characters are mixed into the string before hashing. This is to allow two users to have the same password and stored as completely different hashes within the database. Once the password is successfully hashed, the original password can not be recovered, so bcrypt.compare() is used at login to verify the user.
+
+#### How Did We Find It?
+
+Ellen: I took CS411 last semester and I remembered a group explaining this library as part of their user authentication. I was impressed by the group's thoroughness, as many groups forgot to even include a "Confirm password" section on the sign-up page. I since learned that this is a common practice and common library to use for storing passwords within a database.
+
+While we very well could have stored the passwords as plain text since this project is not publicly available, I thought it best to follow standard industry practices and provide a more professional, impressive, and fleshed out application.
+
 ### Database Schemas
 
 | Field | Type | Attributes | Description |
@@ -88,6 +100,10 @@ On a city's first stamp, the resolve route fetches a cover photo from Unsplash u
 **Wikipedia REST API**
 
 On a city's first stamp, the resolve route also fetches a plain-text description from Wikipedia's free REST API (/api/rest_v1/page/summary/{city}). No API key was required. We use the extract field (full opening paragraph) rather than description, which was too short and inconsistent across cities. We truncated to 500 characters at the nearest sentence ending.
+
+**Resend API**
+
+The original intent of this API was to be able to complete email verification when users register a new account. An outgoing email with a verification hyperlink is sent to validate the user's email. Since Stamped does not own a domain, it was not possible to generate a "noreply" outgoing email. To resolve this, the user has a default "verified" value of True. The logic for the implementation can be found in app/users/route.ts.
 
 **Tag System**
 
