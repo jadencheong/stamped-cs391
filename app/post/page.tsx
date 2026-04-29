@@ -10,6 +10,18 @@ import {useUserId} from "@/lib/hooks/useUserId";
 /* created by Alen */
 /* Jaden addition — added image to cover */
 
+/**
+ *
+ * this is the post creation page
+ *
+ * a user searches for a city using the SearchBar component
+ * once a city is selected, PostForm renders with that city locked in
+ *
+ * the change city back button resets selectedCity back to null
+ * takes user back to the search step
+ */
+
+//ResolvedCity is returned after a city is selected from the search dropdown
 type ResolvedCity = {
     _id: string;
     name: string;
@@ -21,7 +33,7 @@ type ResolvedCity = {
 };
 
 const Wrapper = styled.div`
-  max-width: 480px;
+  max-width: 80vw;
   margin: 0 auto;
   padding: 1.5rem 1rem;
 `;
@@ -32,6 +44,7 @@ const Heading = styled.p`
   font-weight: 600;
   color: #111827;
   margin: 0 0 1rem;
+  position: relative;
 `;
 
 const BackButton = styled.button`
@@ -84,6 +97,8 @@ const CityCountry = styled.p`
 export default function PostPage() {
     //im converting this to my userId hook
     const { userId, ready } = useUserId();
+    // selectedCity is null until the user picks a city from the search bar
+    // null means show search step, else show post form step
     const [selectedCity, setSelectedCity] = useState<ResolvedCity | null>(null);
 
     //loading if not ready
@@ -104,6 +119,7 @@ export default function PostPage() {
     //post form, city has been chosen with the search bar above
     return (
         <Wrapper>
+            {/* clicking back resets selectedCity to null, returns to search */}
             <BackButton onClick={() => setSelectedCity(null)}>
                 ← Change city
             </BackButton>
@@ -122,12 +138,15 @@ export default function PostPage() {
                 )}
                 <TextOverlay>
                     <CityTitle>{selectedCity.name}</CityTitle>
+                    {/* only render country if it exists */}
                     {selectedCity.country && (
                         <CityCountry>{selectedCity.country}</CityCountry>
                     )}
                 </TextOverlay>
             </CoverPhoto>
 
+            {/* userId! non-null assertion is used here because we checked !ready above
+            destinationId comes from mongo _id of the resolved city */}
             <PostForm
                 mode="create"
                 userId={userId!}

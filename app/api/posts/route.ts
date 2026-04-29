@@ -6,15 +6,17 @@ import User from '@/lib/models/User';
 import Destination from '@/lib/models/Destination';
 
 /* crated by: Alen */
-/* CREATE POST */
+/* handles post creation and fetching all posts */
 /* Ellen edit: added userId as part of GET route */
 
+/* CREATE POST */
 export async function POST(req: Request) {
     await dbConnect();
     try {
         const { userId, destinationId, tags, caption, images } = await req.json();
 
         // both a user and a destination are needed to make a post
+        // wih a user and a city in the database
         if (!userId || !destinationId) {
             return NextResponse.json(
                 { error: 'A userId and a destinationId are required' },
@@ -23,6 +25,7 @@ export async function POST(req: Request) {
         }
 
         // tags are now added to the schema, min 1, max 3 per the roadmap
+        // tags are validated here on the server and on the client in PostForm
         if (!tags || tags.length < 1 || tags.length > 3) {
             return NextResponse.json(
                 { error: 'Between 1 and 3 tags are required' },
@@ -30,7 +33,7 @@ export async function POST(req: Request) {
             );
         }
 
-        // should only be one post per city
+        // should only be one post per city and this checks that
         const existing = await Post.findOne({ userId, destinationId });
         if (existing) {
             // I returned 409 so the frontend should route to Edit and the post can get fixed
@@ -63,14 +66,16 @@ export async function POST(req: Request) {
         // end of jaden's part
 
         // add destination to user's personal rankings so that the duel system can find it
-        // should only insert if not already there
+        // $ne check will prevent duplicates by only inserting if not already in the array
+        // personalElo starts at 1000 which is the standard elo baseline
         await User.findOneAndUpdate(
             { _id: userId, 'myRankings.destinationId': { $ne: destinationId } },
             { $push: { myRankings: { destinationId, personalElo: 1000 } } },
             { new: true }
         );
 
-        // count posts in db
+        // count total posts for this user and sends it back to duel system
+        // knows whether to show comparison steps (at least 2 posts)
         const actualPostCount = await Post.countDocuments({ userId });
 
         return NextResponse.json({ 
@@ -86,6 +91,9 @@ export async function POST(req: Request) {
     }
 
 /* GET ALL POSTS */
+// accepts optional userId query param to filer posts by user
+// used by the profile page to show a user's own posts
+//can be used without userId for testing to see all posts
 export async function GET(req: NextRequest) {
     await dbConnect();
     try {
@@ -95,7 +103,8 @@ export async function GET(req: NextRequest) {
         const query = userId ? { userId } : {};
 
         const posts = await Post.find(query)
-            .sort({ createdAt: -1 })
+            .sort({ createdAt: -1 }) // most recent posts shown first
+            // populate swaps raw ObjectIds for the actual document data
             .populate('userId', 'username')        // show author username and not just id
             .populate('destinationId', 'name');    // show city name and not just id
 
