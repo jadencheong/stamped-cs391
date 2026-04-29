@@ -150,7 +150,6 @@ export default function DuelGauntlet() {
     const searchParams = useSearchParams(); // reads ?challengerId= from URL
     const router = useRouter();
     
-    // mock Id for development -- CHANGE LATER
     
 
     // state managmenet stuff
