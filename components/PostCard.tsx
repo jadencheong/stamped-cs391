@@ -1,6 +1,14 @@
 /* post card style for loading into feed and for veiwing posts*/
 /* created by Alen */
 
+/**
+ * displays a single post in the feed or on a profile page
+ * shows city name, author username, tags, caption, and first image
+ *
+ * if currentUserId matches the post author, edit and delete controls will appear
+ * delete has a confirmation step before actually deleting
+ *
+ */
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -19,10 +27,12 @@ type Post = {
 
 type Props = {
     post: Post;
+    // if provided and matches post author, edit/delete controls will be showed
     currentUserId?: string;
 };
 
 const Card = styled.div`
+  min-width: 25vw;
   background: #ffffff;
   border: 0.5px solid #e5e7eb;
   border-radius: 16px;
@@ -58,7 +68,7 @@ const OwnerActions = styled.div`
 
 const EditLink = styled(Link)`
   font-size: 11px;
-  color: #2563eb;
+  color: #326273;
 `;
 
 const DeleteButton = styled.button`
@@ -71,6 +81,7 @@ const DeleteButton = styled.button`
   &:hover { text-decoration: underline; }
 `;
 
+// shown when confirming is true, replaces the delete button
 const ConfirmText = styled.span`
   font-size: 11px;
   color: #374151;
@@ -111,8 +122,8 @@ const TagPill = styled.span<{ $variant: 'blue' | 'orange' }>`
   padding: 3px 10px;
   border-radius: 99px;
   background: #fff7ed;
-  color: #c2410c;
-  border: 0.5px solid dodgerblue;
+  color: #BF7245;
+  border: 0.5px solid #326273;
 `;
 
 const Caption = styled.p`
@@ -132,9 +143,14 @@ const PostImage = styled.img`
 
 export default function PostCard({ post, currentUserId }: Props) {
     const router = useRouter();
+
+    // compare currentUserId to post author to determine if edit/delete should show
     const isOwner = currentUserId === post.userId._id;
+
+    //controls whether the delete confirmation UI is showing
     const [confirming, setConfirming] = useState(false);
 
+    // alternate tag pill colors between blue and orange based on index
     const tagVariant = (i: number): 'blue' | 'orange' => i % 2 === 0 ? 'blue' : 'orange';
 
     const handleDelete = async () => {
@@ -157,10 +173,12 @@ export default function PostCard({ post, currentUserId }: Props) {
                     <Username>@{post.userId.username}</Username>
                 </div>
 
+                {/* edit and delete only visible to the post owner */}
                 {isOwner && (
                     <OwnerActions>
                         <EditLink href={`/posts/${post._id}/edit`}>Edit</EditLink>
 
+                        {/* clicking Delete shows confirmation first */}
                         {confirming ? (
                             <>
                                <ConfirmText>Delete this post?</ConfirmText>
@@ -174,6 +192,7 @@ export default function PostCard({ post, currentUserId }: Props) {
                 )}
             </Header>
 
+            {/* only render tag list if post has tags */}
             {post.tags?.length > 0 && (
                 <TagList>
                     {post.tags.map((tag, i) => (
@@ -182,8 +201,10 @@ export default function PostCard({ post, currentUserId }: Props) {
                 </TagList>
             )}
 
+            {/* only render caption if one exists */}
             {post.caption && <Caption>{post.caption}</Caption>}
 
+            {/* only render images if one exists, shows only first image*/}
             {post.images?.length > 0 && (
                 <PostImage
                     src={post.images[0]}

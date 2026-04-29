@@ -9,11 +9,24 @@ import { TAGS_BY_CATEGORY, Tag } from '@/lib/tags';
 
 import { fadeIn, shimmy, slamDown, AnimatedCardWrapper } from '../app/components/duel/DuelStyles';
 
+
+/**
+ *
+ * handle creating and editing a post, mode prop determines which
+ * create mode is for new posts and shows the duel prompt after submission
+ * the edit mode is for existing posts and pre-populates fields, skips the duel prompt
+ *
+ * 1.user fills in tags, caption, images
+ * 2. on submit, post is saved to db
+ * 3. if user has more than  post, duel prompt is shown
+ * 4. if its their first post then show first post modal instead
+ */
+
 type ExistingPost = {
     _id: string;
     tags: Tag[];
     caption: string;
-    images: string[];
+    images: string[]; //Cloudinary Urls
 };
 
 type Props = {
@@ -21,12 +34,12 @@ type Props = {
     userId: string;
     destinationId: string;
     destinationName: string;
-    existingPost?: ExistingPost;
+    existingPost?: ExistingPost; // needed when mode is Edit
 };
 
 
 const Wrapper = styled.div`
-  max-width: 480px;
+  max-width: 55vw;
   margin: 0 auto;
   padding: 1.5% 1%;
 `;
@@ -111,6 +124,7 @@ const CharCount = styled.p`
   margin: 4px 0 0;
 `;
 
+// label wraps the hidden file input so you can click the whole area
 const ImageUploadArea = styled.label`
   display: flex;
   flex-direction: column;
@@ -159,6 +173,7 @@ const ImagePreview = styled.img`
   border: 0.5px solid #e5e7eb;
 `;
 
+// placed in the top-right corner of each image preview
 const RemoveImageButton = styled.button`
   position: absolute;
   top: -6px;
@@ -284,7 +299,9 @@ export default function PostForm({
     const [caption, setCaption] = useState(existingPost?.caption ?? '');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    // stores Cloudinary URLs, pre-populated in edit mode
     const [images, setImages] = useState<string[]>(existingPost?.images ?? []);
+    // separate from loading, prevents submit while images are mid upload
     const [uploading, setUploading] = useState(false);
 
     // from Anna -- for Duel stuff
@@ -303,12 +320,15 @@ export default function PostForm({
         const files = Array.from(e.target.files ?? []);
         if (files.length === 0) return;
 
-        // max 4 images total
+        // max 4 images total, slice off any extras the user selected
         const remaining = 4 - images.length;
         const toUpload  = files.slice(0, remaining);
 
         setUploading(true);
         try {
+            // upload all selected files in parallel using Promise.all
+            //each file is sent to /api/upload which uploads to Cloudinary
+            // and returns a hosted URl to store in mongo
             const uploaded = await Promise.all(
                 toUpload.map(async (file) => {
                     const formData = new FormData();
@@ -332,10 +352,13 @@ export default function PostForm({
     };
 
     const removeImage = (index: number) => {
+        //filet out the image at the given index
         setImages(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async () => {
+        //validate tags client side before hitting the api
+        // api also validates tags but this occurs first
         if (tags.length < 1) {
             setError('Please select at least 1 tag.');
             return;
@@ -343,6 +366,7 @@ export default function PostForm({
         setError('');
         setLoading(true);
 
+        // same form handles both creating and editing
         const url= isEditing ? `/api/posts/${existingPost!._id}` : '/api/posts';
         const method= isEditing ? 'PATCH' : 'POST';
 
@@ -356,6 +380,8 @@ export default function PostForm({
             const data = await res.json();
 
             if (res.status === 409) {
+                // 409 means user already has a post for this city
+                // reroute them to the edit page instead of just showing an error
                 setError('You have already made a post for this city.');
                 router.push(`/posts/${data.postId}/edit`);
                 return;
@@ -391,7 +417,7 @@ export default function PostForm({
 
     return (
         <Wrapper>
-            {/* city should be locked */}
+            {/* city should be locked, cant be changed after creation */}
             <Section>
                 <Label>City</Label>
                 <CityName>{destinationName}</CityName>
@@ -412,6 +438,7 @@ export default function PostForm({
                             <TagGrid>
                                 {categoryTags.map(tag => {
                                     const selected = tags.includes(tag);
+                                    // maxed disables unselected tags once limit is reached
                                     const maxed    = tags.length >= 3 && !selected;
                                     return (
                                         <TagButton
@@ -467,6 +494,7 @@ export default function PostForm({
                     </>
                 )}
 
+                {/* image previews with remove button, shows Cloudinary URLs */}
                 {images.length > 0 && (
                     <ImagePreviewGrid>
                         {images.map((url, i) => (
@@ -484,6 +512,7 @@ export default function PostForm({
 
             {error && <ErrorText>{error}</ErrorText>}
 
+            {/* disbaled during both loading and uploading, this prevents submitting before images finish uploading*/}
             <SubmitButton onClick={handleSubmit} disabled={loading || uploading}>
                 {loading ? 'Saving...' : isEditing ? 'Save Changes' : 'Post'}
             </SubmitButton>

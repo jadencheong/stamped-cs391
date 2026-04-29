@@ -7,6 +7,16 @@ import { useUserId } from "@/lib/hooks/useUserId";
 
 /* created by Alen */
 
+/**
+ *
+ * home feed page shows the posts from users the current user follows
+ * sorted most recent first, paginated in groups of 20
+ *
+ * if not following anyone, show an empty state with a
+ * "Find People" button to find people to follow
+ *
+ */
+
 type Post = {
   _id: string;
   userId: { _id: string; username: string };
@@ -65,6 +75,8 @@ const ErrorText = styled.p`
   padding: 2rem 0;
 `;
 
+// always visible at the top of feed and encourages users to find
+// and follow people so their feed is not empty
 const FindPeopleButton = styled(Link)`
   display: block;
   width: fit-content;
@@ -81,6 +93,9 @@ const FindPeopleButton = styled(Link)`
 // END OF STYLED COMPONENTS
 
 export default function FeedPage() {
+  // useUserId reads from local storage and ready will be true once it is checked
+  // without ready, the feed would try to fetch with userId being null on the first render
+  // this would show a flase "Failed to load" before localstorage is read
   const { userId, ready } = useUserId();
 
   const [posts, setPosts] = useState<Post[]>([]);
@@ -105,12 +120,16 @@ export default function FeedPage() {
         return;
       }
 
+      // empty on page 1 means no one being followed, show the empty state
       if (pageNum === 1 && data.posts.length === 0) {
         setIsEmpty(true);
         return;
       }
 
+      // page 1 replaces the list, subsequent pages append to it
       setPosts(prev => pageNum === 1 ? data.posts : [...prev, ...data.posts]);
+      //hasMore is true if the api returned a full page of results
+      //false means the end has been reached and the load more button should not display
       setHasMore(data.hasMore);
 
     } catch {
@@ -157,12 +176,15 @@ export default function FeedPage() {
                 {posts.map(post => (
                     <PostCard
                         key={post._id}
+                        // cast to any since feed returns tags as string[]
+                        // but PostCard expects Tag[]
                         post={post as any}
                         currentUserId={userId ?? undefined}
                     />
                 ))}
               </FeedList>
 
+              {/* only show load more if there are more posts to fetch */}
               {hasMore && (
                   <LoadMoreButton onClick={loadMore} disabled={loading}>
                     {loading ? 'Loading...' : 'Load more'}
