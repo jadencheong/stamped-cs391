@@ -14,20 +14,21 @@ export async function POST(req: NextRequest) {
         await dbConnect();
         const { username, email, password } = await req.json();
 
-        console.log('1. received signup request for:', email);
-
+        // requires user to input a password that is at least 8 characters
         if (!password || password.length < 8) {
             return NextResponse.json({ message: 'Password must be at least 8 characters.' }, { status: 400 });
         }
 
+        // does not allow duplicate emails or usernames
         const existing = await User.findOne({ $or: [{ email }, { username }] });
         if (existing) {
             return NextResponse.json({ message: 'Username or email already in use.' }, { status: 409 });
         }
 
-        console.log('2. user does not exist yet, creating...');
-
+        // bcrypt is used to hash the password for further security
         const hashedPassword = await bcrypt.hash(password, 10);
+
+        // crypto is used to generate a unique, random string that is used for the verification
         const verificationToken = crypto.randomBytes(32).toString('hex');
 
         await User.create({
@@ -38,8 +39,8 @@ export async function POST(req: NextRequest) {
             verified: true
         });
 
-        console.log('3. user created, sending email...');
-
+        // Resend API is used to send an outgoing email to the user
+        // verification is successful if the link clicked matches the verificationToken
         const emailResult = await resend.emails.send({
             from: 'Stamped <onboarding@resend.dev>',
             to: email,
@@ -50,8 +51,6 @@ export async function POST(req: NextRequest) {
                      Verify my account
                    </a>`
         });
-
-        console.log('4. email result:', emailResult);
 
         return NextResponse.json({ message: 'Account created! Check your email.' }, { status: 201 });
     } catch (err) {
