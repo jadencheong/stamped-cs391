@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import User from '@/lib/models/User';
 
+// get function for retrieving who the user follows
 // GET
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
     try {
