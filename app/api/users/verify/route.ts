@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import User from '@/lib/models/User';
 
+// get function to verify user
+// route never actually used because users are default verified
+// GET
 export async function GET(req: NextRequest) {
     try {
         await dbConnect();
