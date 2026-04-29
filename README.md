@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stamped App
 
-## Getting Started
+## Technologies 
 
-First, run the development server:
+### Mongoose
+Mongoose is an addition to MongoDB that adds a layer of discipline to the freedom of BSON documents. It serves as the **Object Data Modeling library** for Node.js.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+In "raw" MongoDB, it is possible to save a user with a string for an age in one document and an integer in another. Mongoose remedies this by requiring a Schema, and Mongoose will block a save() on data that does not match that schema. 
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+There's built-in validation, excellent support for middleware, and virtual properites. Mongoose is considered the industry standard for production environments that require data integrity, consistent validation logic, and scalability.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#### How Did We Find It?
+I (Anna) have actually used Mongoose in multiple different projects before. I learned it over about 2 weeks for an interview, and found that I really enjoyed how it bridged the fluidity of nonrelational databases with the structure of something like SQL, allowing for a happy medium. 
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+I've since used it in multiple outside projects, and figured it would be a perfect fit for a project where we have models like Users, Duels, and Destinations where validation and integrity matters. It’s a perfect fit for an app like Stamped, where data consistency (like ELO scores and ranking snapshots) is paramount.
 
-## Learn More
+### Database Schemas
 
-To learn more about Next.js, take a look at the following resources:
+| Field | Type | Attributes | Description |
+| :--- | :--- | :--- | :--- |
+| `mapboxId` | String | Required, Unique | |
+| `name` | String | Required | |
+| `placeName` | String | - | |
+| `country` | String | - | |
+| `imageUrl` | String | Default: null | |
+| `description` | String | Default: null | Wikipedia sourcing |
+| `location` | Object | GeoJSON Point | |
+| `postCount` | Number | Default: 0 | |
+| `category` | String | Enum | City, Nature, Resort, Other |
+| `globalTotalScore` | Number | Default: 1000 | |
+| `timesDuelled` | Number | Default: 0 | |
+| `globalAverageScore`| Number | Default: 1000 | |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+#### 👤 User Model
+| Field | Type | Attributes | Description |
+| :--- | :--- | :--- | :--- |
+| `username` | String | Required, Unique | |
+| `email` | String | Required, Unique | |
+| `verified` | Boolean | Default: true | |
+| `verificationToken`| String | Default: null | |
+| `password` | String | Required | |
+| **`myRankings`** | **Array** | **Sub-docs** | **User's Personal Leaderboard** |
+| - `destinationId` | ObjectId | Ref: Destination | |
+| - `personalElo` | Number | Default: 1000 | |
+| - `isSettled` | Boolean | Default: false | |
+| - `timesDuelled` | Number | Default: 0 | |
+| - `createdAt` | Date | Default: Now | |
+| `following` | Array | Ref: User | Social Relationships Outward |
+| `followers` | Array | Ref: User | Social Relationships Inward |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+#### Duel Model
+| Field | Type | Attributes | Description |
+| :--- | :--- | :--- | :--- |
+| `userId` | ObjectId | Ref: 'User' | Participant ID |
+| `winnerId` | ObjectId | Ref: 'Destination' | Winning City |
+| `loserId` | ObjectId | Ref: 'Destination' | Losing City |
+| `isDraw` | Boolean | Default: false | Support for tie-breaks |
+| `eloGain` | Number | - | Statistical swing (+) for analytics |
+| `eloLoss` | Number | - | Statistical swing (-) for analytics |
+| `timestamp` | Date | Default: Date.now | Historical record |
 
-## Deploy on Vercel
+#### Post Model
+| Field | Type | Attributes | Description |
+| :--- | :--- | :--- | :--- |
+| `userId` | ObjectId | Ref: User | |
+| `destinationId` | ObjectId | Ref: Destination | |
+| **`tags`** | **Array** | **Enum + Validator** | **Must be 1-3 tags** |
+| `caption` | String | Max: 2200 | |
+| `images` | Array | [String] | |
+| `ratingSnapshot` | Object | `{ newRank: Number }` | Post-duel state capture |
+| `createdAt` | Date | Default: Now | |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| **`INDEX`** | **Compound** | **Unique** | **{ userId, destinationId }** |
