@@ -4,8 +4,9 @@
  * app/profile/page.tsx
  *
  * User profile page.
- * Displays username, followers/following counts, and personal rankings list.
+ * Displays username, followers/following counts, and post list.
  * Allows the user to edit their username inline.
+ * Allows the user to sign out or delete their account.
  *
  * Created by: Ellen
  */
@@ -471,6 +472,7 @@ const ConfirmCancelButton = styled.button`
 
     &:hover { border-color: #5C9EAD; }
 `;
+// End of styling
 
 export default function ProfilePage() {
     const router = useRouter();
@@ -488,6 +490,7 @@ export default function ProfilePage() {
     const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
+        // Grabs userId from local storage
         const id = localStorage.getItem('userId');
         setUserId(id);
 
@@ -564,7 +567,9 @@ export default function ProfilePage() {
     };
 
     const handleSignOut = () => {
+        // Deleting userId from local storage when signing out
         localStorage.removeItem('userId');
+        // Re-route back to login page once user is signed out
         router.push('/login');
     };
 
@@ -578,7 +583,9 @@ export default function ProfilePage() {
             });
 
             if (res.ok) {
+                // Deletes userId from local storage upon account deletion
                 localStorage.removeItem('userId');
+                // Re-routes to signup page is account is deleted
                 router.push('/signup');
             }
         } catch (err) {
@@ -611,10 +618,6 @@ export default function ProfilePage() {
     );
     if (!user) return <PageWrapper><LoadingText>User not found.</LoadingText></PageWrapper>;
 
-    // sort rankings by personalElo descending
-    const sortedRankings = [...(user.myRankings ?? [])].sort(
-        (a: any, b: any) => b.personalElo - a.personalElo
-    );
 
     return (
         <>
