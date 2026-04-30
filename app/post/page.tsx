@@ -40,7 +40,7 @@ const Wrapper = styled.div`
 
 const Heading = styled.p`
   font-family: 'Unbounded', sans-serif;
-  font-size: 15px;
+  font-size: calc(10px + 0.5vw);
   font-weight: 600;
   color: #111827;
   margin: 0 0 1rem;
@@ -48,7 +48,7 @@ const Heading = styled.p`
 `;
 
 const BackButton = styled.button`
-  font-size: 12px;
+  font-size: calc(10px + 0.5vw);
   color: #326273;
   background: none;
   border: none;
@@ -82,14 +82,14 @@ const TextOverlay = styled.div`
 
 const CityTitle = styled.p`
   font-family: 'Unbounded', sans-serif;
-  font-size: 18px;
+  font-size: calc(15px + 0.5vw);
   font-weight: 600;
   color: #ffffff;
   margin: 0 0 2px;
 `;
 
 const CityCountry = styled.p`
-  font-size: 13px;
+  font-size: calc(10px + 0.5vw);
   color: rgba(255,255,255,0.8);
   margin: 0;
 `;
