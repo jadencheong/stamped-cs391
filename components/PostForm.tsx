@@ -45,7 +45,7 @@ const Wrapper = styled.div`
 `;
 
 const Label = styled.p`
-  font-size: 12px;
+  font-size: calc(10px + 0.5vw);
   color: #326273;
   margin: 0 0 6px;
   text-transform: uppercase;
@@ -54,14 +54,14 @@ const Label = styled.p`
 
 const CityName = styled.p`
   font-family: 'Unbounded', sans-serif;
-  font-size: 18px;
+  font-size: calc(15px + 0.5vw);
   font-weight: 600;
   color: #BF7245;
   margin: 0 0 4px;
 `;
 
 const LockedNote = styled.p`
-  font-size: 12px;
+  font-size: calc(10px + 0.5vw);
   color: #222021;
   margin: 0;
 `;
@@ -71,7 +71,7 @@ const Section = styled.div`
 `;
 
 const CategoryLabel = styled.p`
-  font-size: 11px;
+  font-size: calc(10px + 0.5vw);
   color: #BF7245;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -85,7 +85,7 @@ const TagGrid = styled.div`
 `;
 
 const TagButton = styled.button<{ $selected: boolean; $disabled: boolean }>`
-  font-size: 12px;
+  font-size: calc(8px + 0.6vw);
   padding: 4px 12px;
   border-radius: 99px;
   font-family: inherit;
@@ -99,13 +99,13 @@ const TagButton = styled.button<{ $selected: boolean; $disabled: boolean }>`
 
 const TagCount = styled.span`
   color: #222021;
-  font-size: 12px;
+  font-size: calc(8px + 0.5vw);
   margin-left: 4px;
 `;
 
 const Textarea = styled.textarea`
   width: 100%;
-  font-size: 13px;
+  font-size: calc(10px + 0.5vw);
   color: #BF7245;
   border: 0.5px solid black;
   border-radius: 12px;
@@ -118,7 +118,7 @@ const Textarea = styled.textarea`
 `;
 
 const CharCount = styled.p`
-  font-size: 12px;
+  font-size: calc(10px + 0.5vw);
   color: #222021;
   text-align: right;
   margin: 4px 0 0;
@@ -141,13 +141,13 @@ const ImageUploadArea = styled.label`
 `;
 
 const ImageUploadText = styled.p`
-  font-size: 12px;
+  font-size: calc(8px + 0.75vw);
   color: #222021;
   margin: 0;
 `;
 
 const ImageUploadSubtext = styled.p`
-  font-size: 11px;
+  font-size: calc(6px + 0.5vw);
   color: #9ca3af;
   margin: 4px 0 0;
 `;
@@ -184,7 +184,7 @@ const RemoveImageButton = styled.button`
   color: white;
   border: none;
   border-radius: 50%;
-  font-size: 10px;
+  font-size: calc(8px + 0.5vw);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -193,13 +193,13 @@ const RemoveImageButton = styled.button`
 `;
 
 const UploadingText = styled.p`
-  font-size: 12px;
+  font-size: calc(8px + 1vw);
   color: #9ca3af;
   margin: 6px 0 0;
 `;
 
 const ErrorText = styled.p`
-  font-size: 13px;
+  font-size: calc(12px + 1vw);
   color: #ef4444;
   margin: 0 0 1rem;
 `;
@@ -208,7 +208,7 @@ const SubmitButton = styled.button`
   width: 100%;
   background: #326273;
   color: #ffffff;
-  font-size: 14px;
+  font-size: calc(12px + 1vw);
   font-weight: 500;
   padding: 12px;
   border: none;
