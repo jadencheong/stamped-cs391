@@ -7,6 +7,18 @@ import { useRouter } from 'next/navigation';
 
 // created by Anna
 
+/**
+ * components/duel/DuelIcon.tsx
+ * 
+ * FILE OVERVIEW:
+ * This component renders a floating action button that persists across 
+ * the application. It displays a "Duel" icon with a real-time notification 
+ * badge indicating the number of pending duels. It features state-aware 
+ * polling every 30 seconds and listens for custom "refreshDuelCount"
+ * events to ensure the badge stays updated as users complete duels
+ * 
+ */
+
 const FixedContainer = styled.div`
     position: fixed;
     bottom: 30px;

@@ -11,6 +11,19 @@ import { fadeIn, shimmy, slamDown, AnimatedCardWrapper } from '../components/due
 
 // created by Anna
 
+/**
+ * app/duel-gauntlet/page.tsx
+ * 
+ * FILE OVERVIEW:
+ * This is the main engine for the "Stamp Duel" feature. It manages two distinct 
+ * user flows: "Challenger Mode" (where a new destination climbs the rankings) 
+ * and "Random Mode" (for general ranking refinement). The page handles complex 
+ * async state transitions, including queue checking, duel result submission, 
+ * and a multi-stage modal system for victories, defeats, and onboarding. It's
+ * pretty cool, and I'm quite proud. 
+ * 
+ */
+
 
 /**
  * STYLED COMPONENTS

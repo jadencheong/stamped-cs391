@@ -4,6 +4,15 @@ import styled, { keyframes } from 'styled-components';
 
 // created by Anna
 
+/**
+ * components/duel/DuelStyles.tsx
+ * 
+ * FILE OVERVIEW:
+ * This files contans some reused styles, as well as various animations
+ * that are reused across other components.
+ * 
+ */
+
 // effects for the "normal" stuff for bg/modal box
 export const fadeIn = keyframes`
     from { 

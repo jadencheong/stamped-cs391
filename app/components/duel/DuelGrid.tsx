@@ -3,6 +3,20 @@ import styled from 'styled-components';
 
 // created by Anna
 
+/**
+ * components/duel/DuelGrid.tsx
+ * 
+ * FILE OVERVIEW:
+ * 
+ * This is a structural layout component that manages the positioning of 
+ * the duel competitors. It utilizes CSS Grid to maintain a side-by-side 
+ * comparison view, includes responsive breakpoints for mobile stacking, 
+ * and handles UI "freezing" (opacity and pointer-events) during active 
+ * data fetching or loading states to ensure things are not clicked 
+ * before things are loaded.
+ * 
+ */
+
 // colors for my own reference 
 // blue slate: #326273
 // pacific blue: #5C9EAD

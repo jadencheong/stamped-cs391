@@ -10,6 +10,19 @@ import { calculateEloChange } from '@/lib/elo';
 
 // created by Anna
 
+/**
+ * api/duel/route.ts
+ * 
+ * FILE OVERVIEW:
+ * 
+ * This API route handles the matchmaking logic (GET) and score processing (POST) 
+ * for the destination duels. It supports three distinct matchmaking modes: 
+ * Challenger (climbing the ladder), New Entry (initial placement), and 
+ * Random (competitive neighbors). The POST handler uses MongoDB transactions 
+ * to ensure atomicity when updating Elo ratings across multiple collections, so that 
+ * Elos do not find thesmselves effect by race conditions. 
+ */
+
 
 export async function GET(req: NextRequest) {
     // connect to mongodb

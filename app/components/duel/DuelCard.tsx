@@ -5,6 +5,18 @@ import styled, { keyframes } from 'styled-components';
 import { Info, XCircle, Sword } from 'lucide-react';
 import Image from 'next/image';
 
+/**
+ * components/duel/DuelCard.tsx
+ * 
+ * FILE OVERVIEW:
+ * This component represents an individual competitor in the duel. It displays 
+ * the city image, name, and a hoverable info tooltip for descriptions. It 
+ * features a unique "shimmy" animation triggered when the selection button  is 
+ * hovered, providing visual feedback for the user's potential choice :]
+ *
+ */
+
+
 // created by Anna
 
 // colors for my own reference 
@@ -180,7 +192,7 @@ export const DuelCard = ({ city, onSelect, buttonColor }: any) => (
         </ContentWrapper>
 
         <SelectButton 
-            $buttonColor={buttonColor} // Pass the color here
+            $buttonColor={buttonColor} // pass the color here
             onClick={() => onSelect(city._id)}
         >
             Choose {city.name}

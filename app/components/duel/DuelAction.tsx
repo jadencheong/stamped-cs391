@@ -1,6 +1,18 @@
 'use client';
 import styled from 'styled-components';
 
+/**
+ * components/duel/DuelAction.tsx
+ * 
+ * FILE OVERVIEW:
+ * This component renders the "Tie-breaker" or "Draw" action area for the 
+ * duel interface. It includes a styled wrapper with a top-border separator 
+ * and a high-contrast action button that supports hover, active, and 
+ * disabled states. It also sports very cool animations. 
+ 
+ */
+
+
 // created by Anna
 
 // colors for my own reference 
@@ -10,6 +22,8 @@ import styled from 'styled-components';
 // Cinnamon wood: #BF7245
 // Sandy Brown: #F19C4C
 // platinum: #EEEEEE
+
+
 
 
 
