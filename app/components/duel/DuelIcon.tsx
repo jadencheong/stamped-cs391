@@ -23,7 +23,7 @@ const FixedContainer = styled.div`
     position: fixed;
     bottom: 30px;
     right: 30px;
-    z-index: 9999; /* Stay above everything */
+    z-index: 9999; /* stay above everything */
 `;
 
 const IconWrapper = styled.div`
@@ -50,14 +50,28 @@ const NotificationDot = styled.div`
     position: absolute;
     top: 2px;
     right: 2px;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     background-color: #ef4444;
     border-radius: 50%;
     border: 2px solid #ffffff;
     box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
     z-index: 10;
 `;
+
+// for the count in the red notifcation dot
+const CountNumber = styled.span`
+    font-size: calc(6px + .4vw);
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    pointer-events: none; /* ensures the click event goes through to the container */
+`;
+
+
 
 export default function DuelIcon() {
     const [undueledCount, setUndueledCount] = useState(0);
@@ -69,6 +83,7 @@ export default function DuelIcon() {
 
                 if (!currentUserId || currentUserId === 'null') return;
 
+                // Date.now() query param prevents browser caching of the count API
                 const res = await fetch(`/api/duel/count?userId=${currentUserId}&t=${Date.now()}`);
                 const data = await res.json();
                 setUndueledCount(data.count || 0);
@@ -76,7 +91,7 @@ export default function DuelIcon() {
 
             checkNotification();
             
-            // Listen for a custom refresh event from the Duel Page
+            // listen for a custom refresh event from the Duel Page
             window.addEventListener('refreshDuelCount', checkNotification);
             const interval = setInterval(checkNotification, 30000);
 
@@ -91,20 +106,9 @@ export default function DuelIcon() {
             <IconWrapper>
                 <Sword size={30} color="#326273" />
                 
-                {/* REPLACED LINE BELOW */}
                 {undueledCount > 0 && (
                     <NotificationDot>
-                        <span style={{ 
-                            fontSize: '10px', 
-                            color: 'white', 
-                            position: 'absolute', 
-                            top: '50%', 
-                            left: '50%', 
-                            transform: 'translate(-50%, -50%)', // Centers the number perfectly
-                            fontWeight: 'bold' 
-                        }}>
-                            {undueledCount}
-                        </span>
+                        <CountNumber>{undueledCount}</CountNumber>
                     </NotificationDot>
                 )}
             </IconWrapper>
