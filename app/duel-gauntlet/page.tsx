@@ -117,6 +117,13 @@ const ExitButton = styled.button`
     /* cute little spin transition... kind of extra, but i like it :] */
     /* open to criticism, though */
     &:hover { transform: rotate(90deg); }
+
+    /* little more responsive for smaller screens */
+    @media (max-width: 480px) {
+        top: 10px;
+        right: 10px;
+        svg { width: 28px; height: 28px; } 
+    }
 `;
 
 const LoadingState = styled.div`
@@ -132,6 +139,16 @@ const IconSpacer = styled.div`
     margin-bottom: 1%;
     display: flex;
     justify-content: center;
+`;
+
+const DrawWrapperContainer = styled.div`
+    width: 100%;
+    max-width: 400px;
+`;
+
+const StrongText = styled.strong`
+    font-weight: 700;
+    color: #326273;
 `;
 
 // MAIN COMPONENT
@@ -321,12 +338,12 @@ export default function DuelGauntlet() {
                     
                     
                     {/* wraps for shimmy animation */}
-                    <div className="draw-wrap" style={{ width: '100%', maxWidth: '400px' }}>
+                    <DrawWrapperContainer className="draw-wrap">
                         <DuelAction 
                             onClick={() => handleVote(currentPair.cityA._id, currentPair.cityB._id, true)} 
                             disabled={loading} 
                         />
-                    </div>
+                    </DrawWrapperContainer>
                 </>
             )}
 
@@ -341,7 +358,7 @@ export default function DuelGauntlet() {
                         <ModalTitle>New Entry Found</ModalTitle>
                         
                         {/* prompt with the city that hasn't been dueled */}
-                        <ModalText><strong>{promptCity.name}</strong> hasn't been duelied yet. Start its gauntlet climb?</ModalText>
+                        <ModalText><StrongText>{promptCity.name}</StrongText> hasn't been duelied yet. Start its gauntlet climb?</ModalText>
                         
                         {/* allow to duel the new entry */}
                         <ActionButton onClick={() => {
