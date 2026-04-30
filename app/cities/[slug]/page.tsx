@@ -89,7 +89,7 @@ const CityTitle = styled.h1`
 
 // country name under city title
 const CitySubtitle = styled.p`
-    font-size: 14px;
+    font-size: calc( 2px + 2vw);
     color: rgba(255,255,255,0.8);
     margin: 0;
 `;
@@ -103,7 +103,7 @@ const ContentSection = styled.div`
 
 // small uppercase label above each section
 const SectionLabel = styled.p`
-  font-size: 11px;
+  font-size: calc( 10px + 1vw);
   color: #9ca3af;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -117,7 +117,7 @@ const RankBadge = styled.div`
     gap: 8px;
     background: #326273;
     color: #ffffff;
-    font-size: 14px;
+    font-size: calc( 10px + 1vw);
     font-weight: 600;
     padding: 8px 16px;
     border-radius: 99px;
@@ -125,7 +125,7 @@ const RankBadge = styled.div`
 
 // wikipedia description text
 const Description = styled.p`
-    font-size: 14px;
+    font-size: calc( 10px + 1vw);
     color: #4b5563;
     line-height: 1.7;
     margin: 0;
@@ -140,7 +140,7 @@ const TagRow = styled.div`
 
 // individual tag chip — matches Alen's PostCard tag styling
 const TagPill = styled.span`
-    font-size: 12px;
+    font-size: calc( 2px + 1.5vw);
     font-weight: 500;
     padding: 4px 12px;
     border-radius: 99px;
@@ -160,7 +160,7 @@ const PostCard = styled.div`
 
 // post author username
 const PostAuthor = styled.p`
-    font-size: 12px;
+    font-size: calc( 2px + 1.5vw);
     color: #5C9EAD;
     margin: 0 0 6px;
     font-weight: 500;
@@ -168,7 +168,7 @@ const PostAuthor = styled.p`
 
 // post caption text
 const PostCaption = styled.p`
-    font-size: 13px;
+    font-size: calc( 10px + 1vw);
     color: #6b7280;
     line-height: 1.6;
     margin: 6px 0 0;
@@ -176,7 +176,7 @@ const PostCaption = styled.p`
 
 // shown when no posts exist for this city
 const EmptyState = styled.p`
-    font-size: 13px;
+    font-size: calc( 2px + 2vw);
     color: #9ca3af;
     text-align: center;
     padding: 2rem 0;
@@ -189,13 +189,13 @@ const NotFound = styled.div`
 `;
 
 const DuelNote = styled.p`
-    font-size: 12px;
+    font-size: calc( 2px + 1.5vw);
     color: #9ca3af;
     margin-top: 8px;
 `;
 
 const NoTagsText = styled.p`
-    font-size: 13px;
+    font-size: calc( 2px + 1.5vw);
     color: #9ca3af;
     margin: 0;
 `;

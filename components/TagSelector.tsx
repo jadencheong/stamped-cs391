@@ -39,7 +39,7 @@ const Wrapper = styled.div`
 // count indicator at top
 // shows "x/3 selected"
 const CountLabel = styled.p`
-  font-size: 11px;
+  font-size: calc( 2px + 1.5vw);
   color: #9ca3af;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -53,7 +53,7 @@ const CategorySection = styled.div`
 
 // category name label
 const CategoryLabel = styled.p`
-  font-size: 11px;
+  font-size: calc( 2px + 1.5vw);
   color: #9ca3af;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -71,7 +71,7 @@ const ChipRow = styled.div`
 const TagChip = styled.button<{ $selected: boolean; $disabled: boolean }>`
   padding: 5px 12px;
   border-radius: 99px;
-  font-size: 12px;
+  font-size: calc( 2px + 2vw);
   font-family: inherit;
   cursor: ${props => props.$disabled ? 'not-allowed' : 'pointer'};
   opacity: ${props => props.$disabled ? 0.4 : 1};
@@ -83,7 +83,7 @@ const TagChip = styled.button<{ $selected: boolean; $disabled: boolean }>`
 
 // validation message shown when 0 tags selected
 const ValidationText = styled.p`
-  font-size: 12px;
+  font-size: calc( 2px + 2vw);
   color: #ef4444;
   margin: 8px 0 0;
 `;

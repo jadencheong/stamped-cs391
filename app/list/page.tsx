@@ -35,21 +35,21 @@ const PageWrapper = styled.div`
 // page heading
 const PageTitle = styled.h1`
     font-family: 'Unbounded', sans-serif;
-    font-size: 20px;
+    font-size: calc( 2px + 3vw);
     font-weight: 600;
     color: #111827;
     margin: 0 0 4px;
 `;
 
 const PageSubtitle = styled.p`
-    font-size: 13px;
+    font-size: calc( 8px + 1vw);
     color: #9ca3af;
     margin: 0 0 2rem;
 `;
 
 // empty state message
 const EmptyState = styled.p`
-    font-size: 13px;
+    font-size: calc( 2px + 2vw);
     color: #9ca3af;
     text-align: center;
     padding: 4rem 0;
@@ -97,7 +97,7 @@ const CityInfo = styled.div`
 
 // city name link
 const CityName = styled(Link)`
-    font-size: 14px;
+    font-size: calc( 10px + 1vw);
     font-weight: 600;
     color: #111827;
     text-decoration: none;
@@ -109,27 +109,10 @@ const CityName = styled(Link)`
     }
 `;
 
-// tag row
-const TagRow = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-`;
-
-// individual tag pill
-const TagPill = styled.span`
-    font-size: 11px;
-    font-weight: 500;
-    padding: 2px 8px;
-    border-radius: 99px;
-    background: #fff7ed;
-    color: #BF7245;
-    border: 0.5px solid #F19C4C;
-`;
 
 // elo score on right side
 const EloScore = styled.span`
-    font-size: 13px;
+    font-size: calc( 6px + 1vw);
     font-weight: 500;
     color: #326273;
     white-space: nowrap;

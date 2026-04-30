@@ -31,14 +31,14 @@ interface SearchBarProps {
 const Wrapper = styled.div`
     position: relative;
     width: 100%;
-    max-width: 400px;
+    max-width: 800px;
 `;
 
 // text input — white background sits on platinum page background
 const Input = styled.input`
     width: 100%;
     padding: 10px 14px;
-    font-size: 15px;
+    font-size: calc(2px + 1vw)
     font-family: inherit;
     background: #ffffff;
     border: 0.5px solid #e5e7eb;
@@ -53,7 +53,7 @@ const Input = styled.input`
 
 // loading indicator
 const LoadingText = styled.p`
-    font-size: 13px;
+    font-size: calc( 2px + 2vw);
     color: #9ca3af;
     margin: 6px 0 0;
 `;
@@ -78,7 +78,7 @@ const Dropdown = styled.ul`
 // individual result row
 const DropdownItem = styled.li`
     padding: 10px 14px;
-    font-size: 13px;
+    font-size: calc( 6px + 1vw);
     color: #374151;
     cursor: pointer;
 
@@ -89,7 +89,7 @@ const DropdownItem = styled.li`
 
 // empty state when no results found
 const EmptyText = styled.p`
-    font-size: 13px;
+    font-size: calc( 2px + 2vw);
     color: #9ca3af;
     margin: 6px 0 0;
 `;

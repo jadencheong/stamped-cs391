@@ -39,7 +39,7 @@ const NavBar = styled.nav`
 
 // individual nav link — bold when active route
 const NavLink = styled(Link)<{ $active: boolean }>`
-    font-size: 14px;
+    font-size: calc( 8px + 1vw);
     font-weight: ${props => props.$active ? '600' : '400'};
     color: ${props => props.$active ? '#326273' : '#6b7280'};
     text-decoration: none;

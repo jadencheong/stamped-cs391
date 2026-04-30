@@ -46,20 +46,20 @@ const PageWrapper = styled.div`
 
 const PageTitle = styled.h1`
     font-family: 'Unbounded', sans-serif;
-    font-size: 20px;
+    font-size: calc( 2px + 3vw);
     font-weight: 600;
     color: #111827;
     margin: 0 0 4px;
 `;
 
 const PageSubtitle = styled.p`
-    font-size: 13px;
+    font-size: calc( 8px + 1vw);
     color: #9ca3af;
     margin: 0 0 2rem;
 `;
 
 const EmptyState = styled.p`
-    font-size: 13px;
+    font-size: calc( 2px + 2vw);
     color: #9ca3af;
     text-align: center;
     padding: 4rem 0;
@@ -101,7 +101,7 @@ const CityInfo = styled.div`
 `;
 
 const CityName = styled(Link)`
-    font-size: 14px;
+    font-size: calc( 10px + 1vw);
     font-weight: 600;
     color: #111827;
     text-decoration: none;
@@ -113,21 +113,7 @@ const CityName = styled(Link)`
     }
 `;
 
-const TagRow = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-`;
 
-const TagPill = styled.span`
-    font-size: 11px;
-    font-weight: 500;
-    padding: 2px 8px;
-    border-radius: 99px;
-    background: #fff7ed;
-    color: #BF7245;
-    border: 0.5px solid #F19C4C;
-`;
 
 // score + duel count on right side
 const ScoreBlock = styled.div`
@@ -136,14 +122,14 @@ const ScoreBlock = styled.div`
 
 const ScoreText = styled.p`
     margin: 0;
-    font-size: 13px;
+    font-size: calc( 6px + 1vw);
     font-weight: 600;
     color: #326273;
 `;
 
 const DuelCount = styled.p`
     margin: 0;
-    font-size: 11px;
+    font-size: calc( 2px + 1vw);
     color: #9ca3af;
 `;
 

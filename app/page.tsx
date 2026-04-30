@@ -45,14 +45,14 @@ const EmptyState = styled.div`
 
 const EmptyTitle = styled.p`
   font-family: 'Unbounded', sans-serif;
-  font-size: 15px;
+  font-size: calc( 2px + 2.3vw);
   font-weight: 600;
   color: #111827;
   margin: 0 0 8px;
 `;
 
 const EmptySubtitle = styled.p`
-  font-size: 13px;
+  font-size: calc( 2px + 2vw);
   color: #9ca3af;
   margin: 0;
 `;
@@ -64,13 +64,13 @@ const LoadMoreButton = styled.button`
   background: #ffffff;
   border: 0.5px solid #e5e7eb;
   border-radius: 12px;
-  font-size: 13px;
+  font-size: calc( 12px + 1vw);
   color: #6b7280;
 `;
 
 const ErrorText = styled.p`
   text-align: center;
-  font-size: 13px;
+  font-size: calc( 2px + 2vw);
   color: #ef4444;
   padding: 2rem 0;
 `;
@@ -84,7 +84,7 @@ const FindPeopleButton = styled(Link)`
   padding: 10px 20px;
   background: #326273;
   color: #ffffff;
-  font-size: 13px;
+  font-size: calc( 8px + 1vw);
   font-weight: 500;
   border-radius: 99px;
   text-decoration: none;

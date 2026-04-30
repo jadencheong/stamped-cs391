@@ -40,7 +40,7 @@ const Wrapper = styled.div`
 
 const Heading = styled.p`
   font-family: 'Unbounded', sans-serif;
-  font-size: calc(10px + 0.5vw);
+  font-size: calc( 2px + 3vw);
   font-weight: 600;
   color: #111827;
   margin: 0 0 1rem;

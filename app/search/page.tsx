@@ -39,7 +39,7 @@ const PageWrapper = styled.div`
 
 const PageTitle = styled.h1`
     font-family: 'Unbounded', sans-serif;
-    font-size: 15px;
+    font-size: calc( 2px + 3vw);
     font-weight: 600;
     color: #111827;
     margin: 0 0 1rem;
@@ -49,7 +49,7 @@ const PageTitle = styled.h1`
 
 const SearchInput = styled.input`
     width: 100%;
-    font-size: 15px;
+    font-size: calc( 2px + 1.5vw);
     padding: 10px 14px;
     border: 0.5px solid #e5e7eb;
     border-radius: 12px;
@@ -82,25 +82,25 @@ const UserCard = styled(Link)`
 
 const Username = styled.p`
     font-family: 'Unbounded', sans-serif;
-    font-size: 13px;
+    font-size: calc( 2px + 1.5vw);
     font-weight: 600;
     color: #111827;
     margin: 0 0 4px;
 `;
 
 const Stats = styled.p`
-    font-size: 11px;
+    font-size: calc( 2px + 1vw);
     color: #9ca3af;
     margin: 0;
 `;
 
 const ChevronIcon = styled.span`
-    font-size: 16px;
+    font-size: calc( 2px + 2vw);
     color: #d1d5db;
 `;
 
 const EmptyState = styled.p`
-    font-size: 13px;
+    font-size: calc( 2px + 1.5vw);
     color: #9ca3af;
     text-align: center;
     padding: 2rem 0;

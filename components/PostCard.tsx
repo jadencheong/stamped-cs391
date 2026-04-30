@@ -48,14 +48,14 @@ const Header = styled.div`
 
 const CityName = styled.p`
   font-family: 'Unbounded', sans-serif;
-  font-size: 15px;
+  font-size: calc( 2px + 1.5vw);
   font-weight: 600;
   color: #111827;
   margin: 0 0 3px;
 `;
 
 const Username = styled.p`
-  font-size: 12px;
+  font-size: calc( 10px + 1vw);
   color: #9ca3af;
   margin: 0;
 `;
@@ -67,12 +67,12 @@ const OwnerActions = styled.div`
 `;
 
 const EditLink = styled(Link)`
-  font-size: 11px;
+  font-size: calc( 4px + .8vw);
   color: #326273;
 `;
 
 const DeleteButton = styled.button`
-  font-size: 11px;
+  font-size: calc( 4px + .8vw);
   color: #ef4444;
   background: none;
   border: none;
@@ -83,12 +83,12 @@ const DeleteButton = styled.button`
 
 // shown when confirming is true, replaces the delete button
 const ConfirmText = styled.span`
-  font-size: 11px;
+  font-size: calc( 2px + 1vw);
   color: #374151;
 `;
 
 const ConfirmButton = styled.button`
-  font-size: 11px;
+  font-size: calc( 2px + 1vw);
   color: #ffffff;
   background: #ef4444;
   border: none;
@@ -99,7 +99,7 @@ const ConfirmButton = styled.button`
 `;
 
 const CancelButton = styled.button`
-  font-size: 11px;
+  font-size: calc( 2px + 1vw);
   color: #6b7280;
   background: none;
   border: 0.5px solid #e5e7eb;
@@ -117,7 +117,7 @@ const TagList = styled.div`
 `;
 
 const TagPill = styled.span<{ $variant: 'blue' | 'orange' }>`
-  font-size: 11px;
+  font-size: calc( 2px + 1vw);
   font-weight: 500;
   padding: 3px 10px;
   border-radius: 99px;
@@ -127,7 +127,7 @@ const TagPill = styled.span<{ $variant: 'blue' | 'orange' }>`
 `;
 
 const Caption = styled.p`
-  font-size: 13px;
+  font-size: calc( 8px + 1vw);
   color: #6b7280;
   line-height: 1.6;
   padding: 0 1.25rem 0.75rem;
