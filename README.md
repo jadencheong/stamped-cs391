@@ -5,6 +5,9 @@
 ### Lucide for React
 This library assists with icons that are simple, customizeable, and optimized. I (Anna) used it so we did not have to create our own assets. I found it by searching up "icons for React", and it has served us well since!
 
+## styled-components animations 
+The keyframes portion of styled-components works nearly identically to its counterpart in standard CSS. So, I (Anna) just used them to create animations how I normally would with CSS :]. 
+
 ### Mongoose
 Mongoose is an addition to MongoDB that adds a layer of discipline to the freedom of BSON documents. It serves as the **Object Data Modeling library** for Node.js.
 
