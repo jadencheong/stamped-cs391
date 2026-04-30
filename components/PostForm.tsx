@@ -220,9 +220,9 @@ const SubmitButton = styled.button`
 // from Anna, duel styled components :]
 const PromptText = styled.p`
   color: #326273;
-  margin-bottom: 2%;
+  margin-bottom: 5%;
   line-height: 1.5;
-  font-size: calc(8px + 2vw);
+  font-size: calc(8px + 1vw);
 
   strong {
     color: #BF7245;
