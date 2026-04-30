@@ -37,6 +37,7 @@ const GauntletPage = styled.main`
     padding: 6vh 2vw;
     position: relative;
     animation: ${fadeIn} 0.5s ease-out;
+    font-size: calc(8px + 1vw);
 
     /* trigger shimmy on both cards when hovering the draw button area */
     /* this targets sibling elements from a parent, which normal CSS hover can't do without JS.*/
@@ -111,7 +112,7 @@ const ActionButton = styled.button<{ $variant?: 'primary' | 'secondary' }>`
     border: ${props => props.$variant === 'secondary' ? '2px solid #5C9EAD' : 'none'};
     background: ${props => props.$variant === 'secondary' ? 'transparent' : '#326273'};
     color: ${props => props.$variant === 'secondary' ? '#326273' : '#EEEEEE'};
-    margin-bottom: 0.75%;
+    margin-bottom: 2%;
     transition: all 0.2s;
     /* cute little visual to show it's being hovered on */
     &:hover { filter: brightness(1.1); transform: translateY(-2px); }
