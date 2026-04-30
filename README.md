@@ -2,6 +2,9 @@
 
 ## Technologies 
 
+### Lucide for React
+This library assists with icons that are simple, customizeable, and optimized. I (Anna) used it so we did not have to create our own assets. I found it by searching up "icons for React", and it has served us well since!
+
 ### Mongoose
 Mongoose is an addition to MongoDB that adds a layer of discipline to the freedom of BSON documents. It serves as the **Object Data Modeling library** for Node.js.
 
@@ -43,7 +46,7 @@ While we very well could have stored the passwords as plain text since this proj
 | `timesDuelled` | Number | Default: 0 | |
 | `globalAverageScore`| Number | Default: 1000 | |
 
-#### 👤 User Model
+#### User Model
 | Field | Type | Attributes | Description |
 | :--- | :--- | :--- | :--- |
 | `username` | String | Required, Unique | |
