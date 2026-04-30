@@ -222,7 +222,7 @@ const PromptText = styled.p`
   color: #326273;
   margin-bottom: 2%;
   line-height: 1.5;
-  font-size: 15px;
+  font-size: calc(8px + 2vw);
 
   strong {
     color: #BF7245;
