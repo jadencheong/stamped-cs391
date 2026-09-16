@@ -205,6 +205,16 @@ export async function POST(req: Request) {
                 { session }
             );
 
+            // update the loser's global stats too — this was missing entirely
+            // before, which is why a city that only ever lost duels never
+            // accumulated any timesDuelled count or score change globally,
+            // even though its personal Elo was updating fine per-user
+            await Destination.findByIdAndUpdate(
+                loserId,
+                { $inc: { globalTotalScore: loss, timesDuelled: 1 } },
+                { session }
+            );
+
             // log the duel history as a duel
             await Duel.create([{
                 userId,
