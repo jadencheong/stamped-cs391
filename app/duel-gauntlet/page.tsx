@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Trophy, XCircle, Sword, Loader2 } from 'lucide-react'; 
@@ -176,7 +176,7 @@ const StrongText = styled.strong`
  * 
  * 2. Random mode: occurs when there is no "undueled" entry, just allows users to duel random pairs for funsies 
  */
-export default function DuelGauntlet() {
+function DuelGauntletInner() {
     // naviagtion stuff
     const searchParams = useSearchParams(); // reads ?challengerId= from URL
     const router = useRouter();
@@ -448,5 +448,16 @@ export default function DuelGauntlet() {
                 </Overlay>
             )}
         </GauntletPage>
+    );
+}
+
+// Wraps the gauntlet in Suspense because it reads the ?challengerId= URL
+// param via useSearchParams(), which Next.js requires to be inside a
+// Suspense boundary for the page to be prerendered/exported at build time.
+export default function DuelGauntlet() {
+    return (
+        <Suspense fallback={null}>
+            <DuelGauntletInner />
+        </Suspense>
     );
 }
