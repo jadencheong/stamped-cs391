@@ -11,6 +11,12 @@
  * created by: Jaden
  */
 
+// Without this, Next.js statically pre-renders this page at build time
+// since it's a plain async Server Component with no dynamic APIs used.
+// That would freeze the leaderboard at whatever the scores were during
+// the build, instead of updating as new duels/posts come in.
+export const dynamic = 'force-dynamic';
+
 import dbConnect from '@/lib/db';
 import Destination from '@/lib/models/Destination';
 import User from '@/lib/models/User';

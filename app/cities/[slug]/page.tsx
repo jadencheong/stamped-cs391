@@ -13,6 +13,12 @@
  * created by: Jaden
  */
 
+// Without this, Next.js statically pre-renders this page at build time
+// since it's a plain async Server Component with no dynamic APIs used.
+// That would freeze the ranking/tags/post feed at whatever they were
+// during the build, instead of reflecting new duels and posts.
+export const dynamic = 'force-dynamic';
+
 import dbConnect from '@/lib/db';
 import Destination from '@/lib/models/Destination';
 import Post from '@/lib/models/Post';
