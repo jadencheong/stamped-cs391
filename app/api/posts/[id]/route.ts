@@ -19,7 +19,7 @@ import Destination from '@/lib/models/Destination';
 /* EDIT POST */
 export async function PATCH(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     await dbConnect();
     try {
@@ -67,7 +67,7 @@ export async function PATCH(
 /* DELETE POST */
 export async function DELETE(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     await dbConnect();
     try {
@@ -119,7 +119,7 @@ export async function DELETE(
 // can display the city name and username instead of raw IDs
 export async function GET(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     await dbConnect();
     try {

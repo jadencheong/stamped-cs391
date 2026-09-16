@@ -4,11 +4,12 @@ import User from '@/lib/models/User';
 
 // get function for retrieving who the user follows
 // GET
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         await dbConnect();
+        const { id } = await params;
 
-        const user = await User.findById(params.id).populate('following', 'username email');
+        const user = await User.findById(id).populate('following', 'username email');
         if (!user) {
             return NextResponse.json({ message: 'User not found.' }, { status: 404 });
         }
