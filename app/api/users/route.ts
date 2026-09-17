@@ -5,8 +5,7 @@ import bcrypt from 'bcrypt';
 import dbConnect from '@/lib/db';
 import User from '@/lib/models/User';
 
-const resend = new Resend(process.env.RESEND_API_KEY); // Add to .env file!!
-console.log('API KEY:', process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // POST
 export async function POST(req: NextRequest) {
@@ -41,16 +40,27 @@ export async function POST(req: NextRequest) {
 
         // Resend API is used to send an outgoing email to the user
         // verification is successful if the link clicked matches the verificationToken
-        const emailResult = await resend.emails.send({
-            from: 'Stamped <onboarding@resend.dev>',
-            to: email,
-            subject: 'Verify your Stamped account',
-            html: `<p>Hey ${username}!</p>
-                   <p>Click below to verify your account:</p>
-                   <a href="${process.env.NEXT_PUBLIC_BASE_URL}/verify?token=${verificationToken}">
-                     Verify my account
-                   </a>`
-        });
+        //
+        // This is intentionally best-effort: `verified` is already set true
+        // above at account creation, and login does not depend on this email
+        // ever being sent or clicked. A Resend failure (e.g. its sandbox
+        // sender only allows sending to the account owner's own email until
+        // a custom domain is verified) should never fail account creation,
+        // which had already succeeded by this point.
+        try {
+            await resend.emails.send({
+                from: 'Stamped <onboarding@resend.dev>',
+                to: email,
+                subject: 'Verify your Stamped account',
+                html: `<p>Hey ${username}!</p>
+                       <p>Click below to verify your account:</p>
+                       <a href="${process.env.NEXT_PUBLIC_BASE_URL}/verify?token=${verificationToken}">
+                         Verify my account
+                       </a>`
+            });
+        } catch (emailErr) {
+            console.error('Signup verification email failed to send (non-blocking):', emailErr);
+        }
 
         return NextResponse.json({ message: 'Account created! Check your email.' }, { status: 201 });
     } catch (err) {
