@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
         // crypto is used to generate a unique, random string that is used for the verification
         const verificationToken = crypto.randomBytes(32).toString('hex');
 
-        await User.create({
+        const newUser = await User.create({
             username,
             email,
             password: hashedPassword,
@@ -62,7 +62,10 @@ export async function POST(req: NextRequest) {
             console.error('Signup verification email failed to send (non-blocking):', emailErr);
         }
 
-        return NextResponse.json({ message: 'Account created! Check your email.' }, { status: 201 });
+        return NextResponse.json({
+            message: 'Account created!',
+            user: { _id: newUser._id, username: newUser.username, email: newUser.email }
+        }, { status: 201 });
     } catch (err) {
         console.error('SIGNUP ERROR:', err);
         return NextResponse.json({ message: 'Failed to create user.', error: (err as Error).message }, { status: 500 });

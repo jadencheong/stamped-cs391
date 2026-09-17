@@ -5,13 +5,16 @@
  *
  * Signup page for new users.
  * Accepts username, email, password, and confirm password.
- * On success, shows a "check your email" message rather than redirecting
- * since the user needs to verify their email before logging in.
+ * On success, logs the user in immediately and redirects to the feed
+ * (accounts are already fully active on creation — no email verification
+ * gate actually exists, so there's no reason to make the user log in
+ * again with the credentials they just entered).
  *
  * Created by: Ellen
  */
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import styled, { keyframes } from 'styled-components';
 
 // colors
@@ -201,43 +204,6 @@ const SubmitButton = styled.button`
     }
 `;
 
-const SuccessCard = styled.div`
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    animation: ${fadeUp} 0.4s ease-out both;
-`;
-
-const SuccessIcon = styled.div`
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: #326273;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-`;
-
-const SuccessTitle = styled.h2`
-    font-family: 'Helvetica', sans-serif;
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #326273;
-    margin: 0;
-`;
-
-const SuccessText = styled.p`
-    font-family: 'Helvetica', sans-serif;
-    font-size: 0.88rem;
-    color: #5C9EAD;
-    margin: 0;
-    line-height: 1.6;
-`;
-
 const FooterText = styled.p`
     font-family: 'Helvetica', sans-serif;
     font-size: 0.82rem;
@@ -268,13 +234,13 @@ const GlobalError = styled.p`
 `;
 
 export default function SignupPage() {
+    const router = useRouter();
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [globalError, setGlobalError] = useState('');
-    const [success, setSuccess] = useState(false);
 
     // individual field errors
     const [errors, setErrors] = useState({
@@ -341,7 +307,11 @@ export default function SignupPage() {
                 return;
             }
 
-            setSuccess(true);
+            // account created and effectively verified already (see API route) —
+            // log the user straight in rather than making them re-enter the
+            // same credentials on the login page a moment later
+            localStorage.setItem('userId', data.user._id);
+            router.push('/');
         } catch (err) {
             setGlobalError('Something went wrong. Please try again.');
         } finally {
@@ -358,84 +328,70 @@ export default function SignupPage() {
                     </StampBorder>
                 </LogoBlock>
 
-                {success ? (
-                    <SuccessCard>
-                        <SuccessIcon>✓</SuccessIcon>
-                        <SuccessTitle>Check your email!</SuccessTitle>
-                        <SuccessText>
-                            We sent a verification link to <strong>{email}</strong>.
-                            Click it to activate your account before logging in.
-                        </SuccessText>
-                        <FooterLink href="/login">Back to login</FooterLink>
-                    </SuccessCard>
-                ) : (
-                    <>
-                        <FormTitle>Create an account</FormTitle>
+                <FormTitle>Create an account</FormTitle>
 
-                        <FieldWrapper $delay="0.3s">
-                            <Label htmlFor="username">Username</Label>
-                            <Input
-                                id="username"
-                                type="text"
-                                placeholder="yourname"
-                                value={username}
-                                $hasError={!!errors.username}
-                                onChange={e => setUsername(e.target.value)}
-                            />
-                            {errors.username && <FieldError>{errors.username}</FieldError>}
-                        </FieldWrapper>
+                <FieldWrapper $delay="0.3s">
+                    <Label htmlFor="username">Username</Label>
+                    <Input
+                        id="username"
+                        type="text"
+                        placeholder="yourname"
+                        value={username}
+                        $hasError={!!errors.username}
+                        onChange={e => setUsername(e.target.value)}
+                    />
+                    {errors.username && <FieldError>{errors.username}</FieldError>}
+                </FieldWrapper>
 
-                        <FieldWrapper $delay="0.4s">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="you@example.com"
-                                value={email}
-                                $hasError={!!errors.email}
-                                onChange={e => setEmail(e.target.value)}
-                            />
-                            {errors.email && <FieldError>{errors.email}</FieldError>}
-                        </FieldWrapper>
+                <FieldWrapper $delay="0.4s">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                        id="email"
+                        type="email"
+                        placeholder="you@example.com"
+                        value={email}
+                        $hasError={!!errors.email}
+                        onChange={e => setEmail(e.target.value)}
+                    />
+                    {errors.email && <FieldError>{errors.email}</FieldError>}
+                </FieldWrapper>
 
-                        <FieldWrapper $delay="0.5s">
-                            <Label htmlFor="password">Password</Label>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="••••••••"
-                                value={password}
-                                $hasError={!!errors.password}
-                                onChange={e => setPassword(e.target.value)}
-                            />
-                            {errors.password && <FieldError>{errors.password}</FieldError>}
-                        </FieldWrapper>
+                <FieldWrapper $delay="0.5s">
+                    <Label htmlFor="password">Password</Label>
+                    <Input
+                        id="password"
+                        type="password"
+                        placeholder="••••••••"
+                        value={password}
+                        $hasError={!!errors.password}
+                        onChange={e => setPassword(e.target.value)}
+                    />
+                    {errors.password && <FieldError>{errors.password}</FieldError>}
+                </FieldWrapper>
 
-                        <FieldWrapper $delay="0.6s">
-                            <Label htmlFor="confirmPassword">Confirm password</Label>
-                            <Input
-                                id="confirmPassword"
-                                type="password"
-                                placeholder="••••••••"
-                                value={confirmPassword}
-                                $hasError={!!errors.confirmPassword}
-                                onChange={e => setConfirmPassword(e.target.value)}
-                            />
-                            {errors.confirmPassword && <FieldError>{errors.confirmPassword}</FieldError>}
-                        </FieldWrapper>
+                <FieldWrapper $delay="0.6s">
+                    <Label htmlFor="confirmPassword">Confirm password</Label>
+                    <Input
+                        id="confirmPassword"
+                        type="password"
+                        placeholder="••••••••"
+                        value={confirmPassword}
+                        $hasError={!!errors.confirmPassword}
+                        onChange={e => setConfirmPassword(e.target.value)}
+                    />
+                    {errors.confirmPassword && <FieldError>{errors.confirmPassword}</FieldError>}
+                </FieldWrapper>
 
-                        {globalError && <GlobalError>{globalError}</GlobalError>}
+                {globalError && <GlobalError>{globalError}</GlobalError>}
 
-                        <SubmitButton onClick={handleSubmit} disabled={isLoading}>
-                            {isLoading ? 'Creating account...' : 'Sign up'}
-                        </SubmitButton>
+                <SubmitButton onClick={handleSubmit} disabled={isLoading}>
+                    {isLoading ? 'Creating account...' : 'Sign up'}
+                </SubmitButton>
 
-                        <FooterText>
-                            Already have an account?{' '}
-                            <FooterLink href="/login">Log in</FooterLink>
-                        </FooterText>
-                    </>
-                )}
+                <FooterText>
+                    Already have an account?{' '}
+                    <FooterLink href="/login">Log in</FooterLink>
+                </FooterText>
             </Card>
         </PageWrapper>
     );
